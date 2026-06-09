@@ -49,13 +49,20 @@ export default function Page() {
         }
         setLoaded(true);
       })
-      .catch((e) => { if (alive) { setLoadError(String(e.message ?? e)); setLoaded(true); } });
-    return () => { alive = false; };
+      .catch((e) => {
+        if (alive) {
+          setLoadError(String(e.message ?? e));
+          setLoaded(true);
+        }
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const loadContent = useCallback(
     async (s: GameState, lastAction?: string) => {
-      if (!engine) return;
+      if (!engine || !s) return;
       const node = engine.getNode(s);
       const td = traitDef(engine.graph, s.trait);
       
@@ -72,7 +79,9 @@ export default function Page() {
         const nodeId = s.currentNodeId || "";
         if (nodeId === "ramb_combate") playSfx("event/combat");
         if (nodeId === "rama_intro") playSfx("event/catapult");
-        if (nodeId.startsWith("cena4") && nodeId.endsWith("_dado")) playSfx("event/surgery");
+        if (nodeId && nodeId.startsWith("cena4") && nodeId.endsWith("_dado")) {
+          playSfx("event/surgery");
+        }
       }
       
       setBusy(true);
@@ -143,7 +152,6 @@ export default function Page() {
       const outcome = engine.applyDiceRoll(state, value);
       playSfx(outcome.success ? "ui/dice-success" : "ui/dice-failure");
       setLastRoll({ roll: outcome.roll, success: outcome.success, nextState: outcome.state });
-      // Removemos o loadContent automático daqui
     },
     [engine, state, busy]
   );
@@ -160,7 +168,11 @@ export default function Page() {
 
   if (!loaded) return null;
   if (loadError) {
-    return <main className="mx-auto max-w-xl p-8 text-center text-red-300">Erro ao carregar a história: {loadError}</main>;
+    return (
+      <main className="mx-auto max-w-xl p-8 text-center text-red-300">
+        Erro ao carregar a história: {loadError}
+      </main>
+    );
   }
   if (!engine) return null;
 
@@ -263,7 +275,12 @@ export default function Page() {
           </div>
 
           {node.kind === "scene" && (
-            <ChoiceList choices={choices} onChoose={handleChoice} disabled={busy} loading={narrating} />
+            <ChoiceList
+              choices={choices}
+              onChoose={handleChoice}
+              disabled={busy}
+              loading={narrating}
+            />
           )}
           {node.kind === "dice" && (
             <DiceRoller
