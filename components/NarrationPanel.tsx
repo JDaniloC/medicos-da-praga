@@ -1,5 +1,7 @@
 "use client";
 
+import { SpeakButton } from "./SpeakButton";
+
 export function NarrationPanel({
   text,
   loading,
@@ -17,5 +19,14 @@ export function NarrationPanel({
       </div>
     );
   }
-  return <div className="prose-narrativa fade-in text-[1.1rem] font-medium text-ink">{text}</div>;
+  return (
+    <div className="fade-in">
+      {text && (
+        <div className="mb-3 flex justify-end">
+          <SpeakButton text={text} />
+        </div>
+      )}
+      <div className="prose-narrativa text-[1.1rem] font-medium text-ink">{text}</div>
+    </div>
+  );
 }
