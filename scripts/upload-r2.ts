@@ -26,7 +26,12 @@ const CONTENT_TYPE: Record<string, string> = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
+  ".mp3": "audio/mpeg",
+  ".ogg": "audio/ogg",
+  ".wav": "audio/wav",
 };
+
+const UPLOAD_EXT = new Set(Object.keys(CONTENT_TYPE));
 
 const s3 = new S3Client({
   region: "auto",
@@ -45,9 +50,9 @@ function walk(dir: string): string[] {
 }
 
 async function main() {
-  const files = walk(root).filter((f) => extname(f).toLowerCase() === ".webp");
+  const files = walk(root).filter((f) => UPLOAD_EXT.has(extname(f).toLowerCase()));
   if (!files.length) {
-    console.error(`Nenhum .webp em "${root}". Rode "npm run images:webp" antes.`);
+    console.error(`Nenhum asset (webp/mp3/ogg/wav) em "${root}".`);
     process.exit(1);
   }
   let sent = 0;
