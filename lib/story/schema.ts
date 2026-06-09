@@ -60,6 +60,7 @@ export const DifficultyRuleSchema = z.object({
   set: z.number().optional(),
   delta: z.number().optional(),
 }).strict();
+export type DifficultyRule = z.infer<typeof DifficultyRuleSchema>;
 export const ResolutionSchema = z.object({
   effects: z.array(EffectSchema).optional(),
   goto: NextSchema,
