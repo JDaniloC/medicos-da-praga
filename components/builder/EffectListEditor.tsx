@@ -2,6 +2,7 @@
 // Lista ordenável de Effects com campos por tipo e condição opcional (when).
 "use client";
 
+import { useMemo } from "react";
 import type { Effect, StoryAct } from "@/lib/story/schema";
 import { setWhen } from "@/lib/builder/condition-utils";
 import { EFFECT_KINDS, convertEffect, defaultEffect, effectKind, type EffectKind } from "@/lib/builder/effect-utils";
@@ -17,12 +18,15 @@ const KIND_LABEL: Record<EffectKind, string> = {
   setPatient: "Resultado do paciente",
 };
 
+// Listas de sugestão coletadas do ato — calculadas uma vez por render (não por linha).
+type EffectOptions = { flags: string[]; items: string[]; patients: string[]; treatments: string[] };
+
 function EffectFields({
-  value, onChange, act,
+  value, onChange, opts,
 }: {
   value: Effect;
   onChange: (e: Effect) => void;
-  act: StoryAct;
+  opts: EffectOptions;
 }) {
   if ("setFlag" in value) {
     return (
@@ -31,7 +35,7 @@ function EffectFields({
           <Combobox
             value={value.setFlag}
             onChange={(setFlag) => onChange({ ...value, setFlag })}
-            options={flagNames(act)}
+            options={opts.flags}
             placeholder="nome_da_flag"
           />
         </div>
@@ -54,7 +58,7 @@ function EffectFields({
         <Combobox
           value={value.grantItem}
           onChange={(grantItem) => onChange({ ...value, grantItem })}
-          options={itemIds(act)}
+          options={opts.items}
           placeholder="id do item"
         />
       </div>
@@ -67,7 +71,7 @@ function EffectFields({
           <Combobox
             value={value.setTreatment}
             onChange={(setTreatment) => onChange({ ...value, setTreatment })}
-            options={patientIds(act)}
+            options={opts.patients}
             placeholder="paciente"
           />
         </div>
@@ -76,7 +80,7 @@ function EffectFields({
           <Combobox
             value={value.value}
             onChange={(v) => onChange({ ...value, value: v })}
-            options={treatmentValues(act)}
+            options={opts.treatments}
             placeholder="tratamento"
           />
         </div>
@@ -89,7 +93,7 @@ function EffectFields({
         <Combobox
           value={value.setPatient}
           onChange={(setPatient) => onChange({ ...value, setPatient })}
-          options={patientIds(act)}
+          options={opts.patients}
           placeholder="paciente"
         />
       </div>
@@ -116,6 +120,13 @@ export function EffectListEditor({
 }) {
   const effects = value ?? [];
   const update = (list: Effect[]) => onChange(list.length ? list : undefined);
+  const opts = useMemo<EffectOptions>(
+    () => ({
+      flags: flagNames(act), items: itemIds(act),
+      patients: patientIds(act), treatments: treatmentValues(act),
+    }),
+    [act]
+  );
 
   return (
     <div className="space-y-3">
@@ -145,7 +156,7 @@ export function EffectListEditor({
               ✕
             </Button>
           </div>
-          <EffectFields value={e} onChange={(next) => update(replaceAt(effects, i, next))} act={act} />
+          <EffectFields value={e} onChange={(next) => update(replaceAt(effects, i, next))} opts={opts} />
           <div>
             <p className="mb-1 text-xs font-semibold text-ink-soft">Condição (opcional — só aplica se verdadeira):</p>
             <ConditionBuilder

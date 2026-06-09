@@ -21,6 +21,28 @@ export async function readActFromDb(db: SupabaseClient, act: number): Promise<St
   return StoryActSchema.parse(candidate);
 }
 
+export interface ActSummary {
+  act: number;
+  title: string;
+  nodeCount: number;
+  updatedAt: string;
+}
+
+// Lista os atos com a contagem de nós. As duas queries são independentes — rodam em paralelo.
+export async function listActSummaries(db: SupabaseClient): Promise<ActSummary[]> {
+  const [a, s] = await Promise.all([
+    db.from("acts").select("act,title,updated_at").order("act"),
+    db.from("scenes").select("act"),
+  ]);
+  if (a.error) throw a.error;
+  if (s.error) throw s.error;
+  const counts = new Map<number, number>();
+  for (const r of s.data as { act: number }[]) counts.set(r.act, (counts.get(r.act) ?? 0) + 1);
+  return (a.data as { act: number; title: string; updated_at: string }[]).map((r) => ({
+    act: r.act, title: r.title, nodeCount: counts.get(r.act) ?? 0, updatedAt: r.updated_at,
+  }));
+}
+
 export function staleNodeIds(existing: string[], current: string[]): string[] {
   const keep = new Set(current);
   return existing.filter((id) => !keep.has(id));
