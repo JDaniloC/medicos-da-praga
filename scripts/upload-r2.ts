@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import { readdirSync, statSync, readFileSync } from "node:fs";
 import { join, extname, relative, sep } from "node:path";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { CONTENT_TYPE } from "../lib/builder/r2";
 
 dotenv.config({ path: [".env.local", ".env"] });
 
@@ -20,16 +21,6 @@ if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET) 
   );
   process.exit(1);
 }
-
-const CONTENT_TYPE: Record<string, string> = {
-  ".webp": "image/webp",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".mp3": "audio/mpeg",
-  ".ogg": "audio/ogg",
-  ".wav": "audio/wav",
-};
 
 const UPLOAD_EXT = new Set(Object.keys(CONTENT_TYPE));
 

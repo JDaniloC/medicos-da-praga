@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@andresaya/edge-tts": "^1.8.0",
+    "@aws-sdk/client-s3": "^3.1064.0",
     "@google/genai": "^2.8.0",
     "@supabase/supabase-js": "^2.108.0",
     "next": "16.2.7",
@@ -25,7 +26,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.1064.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",

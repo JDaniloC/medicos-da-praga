@@ -18,6 +18,9 @@ dos trilhos.
   configurado, cai no seed local (modo de dev).
 - **Imagens**: estáticas no Cloudflare R2, referenciadas por caminho (`NEXT_PUBLIC_R2_BASE_URL`).
 - **Save** (`lib/storage/`): progresso em `localStorage`.
+- **Construtor de atos** (`/builder`): CMS visual para criar e editar atos direto no Supabase
+  (metadados, traços, itens, nós, condições, efeitos, rolagens) com upload de mídia para o R2.
+  Protegido por `ADMIN_TOKEN`.
 
 ## Como rodar localmente
 
@@ -49,6 +52,19 @@ cai em fallback (mostra o briefing). Sem `NEXT_PUBLIC_R2_BASE_URL`, as imagens m
 > que protege a chave da API.
 
 ## Autoria de novos atos
+
+### Pelo construtor visual (recomendado)
+
+1. Defina `ADMIN_TOKEN` no `.env.local` (sem ele o builder fica desabilitado).
+2. Acesse `/builder`, entre com o token e crie/edite atos pela interface:
+   metadados, traços, itens/insígnias e cada nó (cena, teste de dado, final), incluindo
+   condições, efeitos e roteamento condicional — sem escrever JSON.
+3. Imagens e áudios ambiente podem ser enviados ao R2 pelo próprio editor (requer as
+   credenciais `R2_*` no servidor).
+4. Salvar valida o ato (schema + referências) e grava direto nas tabelas `acts`/`scenes`.
+   Recarregue a aba do jogo para ver a mudança.
+
+### Pela linha de comando (alternativa)
 
 1. Escreva o ato em prosa e converta para JSON com `docs/authoring/prosa-para-json.md`.
 2. `npm run validate:story supabase/seed/act<N>.json`
