@@ -69,9 +69,10 @@ export default function Page() {
         setAmbient(node.ambient ?? null);
         
         // Stingers de Evento baseados no ID da cena
-        if (s.nodeId === "ramb_combate") playSfx("event/combat");
-        if (s.nodeId === "rama_intro") playSfx("event/catapult");
-        if (s.nodeId.startsWith("cena4") && s.nodeId.endsWith("_dado")) playSfx("event/surgery");
+        const nodeId = s.currentNodeId || "";
+        if (nodeId === "ramb_combate") playSfx("event/combat");
+        if (nodeId === "rama_intro") playSfx("event/catapult");
+        if (nodeId.startsWith("cena4") && nodeId.endsWith("_dado")) playSfx("event/surgery");
       }
       
       setBusy(true);
@@ -168,7 +169,7 @@ export default function Page() {
       <main className="flex-1">
         <AssetImage
           path="ui/parchment-texture.webp"
-          className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.5] object-cover opacity-[0.25] mix-blend-multiply"
+          className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.1] object-cover opacity-[0.1] mix-blend-multiply"
         />
         <TraitSelect traits={engine.graph.traits} onSelect={selectTrait} disabled={busy} />
       </main>
