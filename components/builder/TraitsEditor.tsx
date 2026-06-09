@@ -4,6 +4,7 @@
 import type { TraitDef } from "@/lib/story/schema";
 import { removeAt, replaceAt } from "@/lib/builder/immutable";
 import { Button, Field, TextArea, TextInput } from "./ui";
+import { MediaPicker } from "./MediaPicker";
 
 const emptyTrait = (): TraitDef => ({
   id: "", nome: "", descricao: "", portrait: "", inventarioInicial: [],
@@ -51,9 +52,11 @@ export function TraitsEditor({
               />
             </Field>
             <Field label="Retrato" hint="Chave R2 da imagem (ex.: portraits/druida.webp).">
-              <TextInput
+              <MediaPicker
                 value={t.portrait}
-                onChange={(e) => updateTrait(i, { portrait: e.target.value })}
+                onChange={(portrait) => updateTrait(i, { portrait })}
+                kind="image"
+                prefix="portraits"
               />
             </Field>
             <Field label="Inventário inicial" hint="Itens do record de Itens & Insígnias.">

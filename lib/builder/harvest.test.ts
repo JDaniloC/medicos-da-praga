@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { StoryActSchema } from "@/lib/story/schema";
 import {
-  ambientKeys, flagNames, itemIds, nodeIds, patientIds, traitIds, treatmentValues,
+  flagNames, itemIds, nodeIds, patientIds, traitIds, treatmentValues,
 } from "./harvest";
 
 const act = StoryActSchema.parse(
@@ -40,13 +40,6 @@ describe("harvest (sobre o act1.json real)", () => {
   it("treatmentValues varre valores de setTreatment e de condições treatment", () => {
     expect(treatmentValues(act)).toEqual([
       "amputar", "dieta", "extracao", "orar_talas", "pasta", "sangria", "talas",
-    ]);
-  });
-
-  it("ambientKeys coleta os ambients usados nos nós", () => {
-    expect(ambientKeys(act)).toEqual([
-      "amb/camp", "amb/hospital", "amb/night-revolt",
-      "amb/plague-march", "amb/road", "amb/siege-fall",
     ]);
   });
 });

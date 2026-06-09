@@ -5,8 +5,8 @@
 import { useState } from "react";
 import type { StoryAct, StoryNode } from "@/lib/story/schema";
 import { countReferences } from "@/lib/builder/act-utils";
-import { ambientKeys } from "@/lib/builder/harvest";
-import { Button, Combobox, Field, TextArea, TextInput } from "./ui";
+import { Button, Field, TextArea, TextInput } from "./ui";
+import { MediaPicker } from "./MediaPicker";
 
 export function NodeCommonFields({
   act, node, onChangeNode, onRename,
@@ -46,20 +46,21 @@ export function NodeCommonFields({
         </div>
       </Field>
       <Field label="Imagem" hint="Chave R2 da arte do nó (ex.: scenes/cena1.webp).">
-        <TextInput
+        <MediaPicker
           value={node.image}
-          onChange={(e) => onChangeNode({ ...node, image: e.target.value })}
+          onChange={(image) => onChangeNode({ ...node, image })}
+          kind="image"
+          prefix="scenes"
         />
       </Field>
       <Field
         label="Som ambiente (opcional)"
-        hint="Chave relativa a sfx/ no R2, sem extensão (ex.: amb/hospital)."
+        hint="Deixe vazio para sem ambiente. Valor sem sfx/ nem extensão (ex.: amb/hospital); apenas .mp3."
       >
-        <Combobox
+        <MediaPicker
           value={node.ambient ?? ""}
           onChange={(v) => onChangeNode({ ...node, ambient: v || undefined })}
-          options={ambientKeys(act)}
-          placeholder="(sem ambiente)"
+          kind="ambient"
         />
       </Field>
       <Field

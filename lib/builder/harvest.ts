@@ -85,7 +85,3 @@ export function treatmentValues(act: StoryAct): string[] {
   });
   return uniqueSorted(out);
 }
-
-export function ambientKeys(act: StoryAct): string[] {
-  return uniqueSorted(act.nodes.map((n) => n.ambient).filter((x): x is string => !!x));
-}
