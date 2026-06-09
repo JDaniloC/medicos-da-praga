@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# imagens de arte: fonte (png) e webp vão para o R2, nunca para o repo
+/images/
+/public/images/

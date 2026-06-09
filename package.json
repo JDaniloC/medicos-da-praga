@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate:story": "tsx scripts/validate-story.ts",
-    "seed:story": "tsx scripts/seed-story.ts"
+    "seed:story": "tsx scripts/seed-story.ts",
+    "images:webp": "tsx scripts/convert-images.ts"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
@@ -28,6 +29,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5",
