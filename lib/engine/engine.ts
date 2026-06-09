@@ -37,7 +37,7 @@ export function createEngine(graph: StoryGraph) {
     const node = getNode(state);
     if (node.kind !== "scene") throw new Error(`O nó atual (${node.id}) não aceita escolhas.`);
     const choice = visibleChoices(node, state).find((c) => c.id === choiceId);
-    if (!choice) throw new Error(`Escolha inválida: ${choiceId}`);
+    if (!choice) throw new Error(`Escolha inválida ou indisponível para o estado atual: ${choiceId}`);
     const applied = applyEffects(choice.effects, state);
     return { ...applied, currentNodeId: resolveNext(choice.next, applied) };
   }

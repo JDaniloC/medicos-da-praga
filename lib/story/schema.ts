@@ -39,7 +39,12 @@ export const NextRuleSchema = z.object({
   when: ConditionSchema.optional(),
   goto: z.string().optional(),
   default: z.string().optional(),
-}).strict();
+}).strict().refine(
+  (r) =>
+    (r.when !== undefined && r.goto !== undefined && r.default === undefined) ||
+    (r.default !== undefined && r.when === undefined && r.goto === undefined),
+  { message: "regra de `next` deve ser {when, goto} ou {default}" }
+);
 export const NextSchema = z.union([z.string(), z.array(NextRuleSchema)]);
 export type Next = z.infer<typeof NextSchema>;
 
@@ -59,7 +64,10 @@ export const DifficultyRuleSchema = z.object({
   when: ConditionSchema.optional(),
   set: z.number().optional(),
   delta: z.number().optional(),
-}).strict();
+}).strict().refine(
+  (r) => (r.set !== undefined) !== (r.delta !== undefined),
+  { message: "regra de dificuldade deve ter exatamente um de `set` ou `delta`" }
+);
 export type DifficultyRule = z.infer<typeof DifficultyRuleSchema>;
 export const ResolutionSchema = z.object({
   effects: z.array(EffectSchema).optional(),

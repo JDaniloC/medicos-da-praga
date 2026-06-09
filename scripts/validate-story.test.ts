@@ -23,4 +23,11 @@ describe("validateAct", () => {
     });
     expect(r.ok).toBe(false);
   });
+  it("rejeita nó de dado sem resolve", () => {
+    const r = validateAct({
+      act: 9, title: "T", start: "a", worldContext: "", traits: [],
+      nodes: [{ id: "a", kind: "dice", image: "i", narration: "n", reason: "x", difficulty: { base: 10 } }],
+    });
+    expect(r.ok).toBe(false);
+  });
 });
