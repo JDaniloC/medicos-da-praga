@@ -166,10 +166,10 @@ export default function Page() {
 
   if (!state) {
     return (
-      <main className="flex-1">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pt-24 pb-32">
         <AssetImage
           path="ui/parchment-texture.webp"
-          className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.1] object-cover opacity-[0.1] mix-blend-multiply"
+          className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.05] object-cover opacity-[0.08] mix-blend-multiply"
         />
         <TraitSelect traits={engine.graph.traits} onSelect={selectTrait} disabled={busy} />
       </main>
@@ -184,7 +184,7 @@ export default function Page() {
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pt-24 pb-32">
       <AssetImage
         path="ui/parchment-texture.webp"
-        className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.1] object-cover opacity-[0.1] mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.05] object-cover opacity-[0.08] mix-blend-multiply"
       />
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-edge bg-background/80 backdrop-blur-sm px-4 py-3">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
