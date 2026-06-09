@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "validate:story": "tsx scripts/validate-story.ts",
     "seed:story": "tsx scripts/seed-story.ts",
-    "images:webp": "tsx scripts/convert-images.ts"
+    "images:webp": "tsx scripts/convert-images.ts",
+    "upload:r2": "tsx scripts/upload-r2.ts"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
@@ -22,6 +23,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1064.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
