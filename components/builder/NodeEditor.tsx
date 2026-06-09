@@ -6,6 +6,7 @@ import type { StoryAct, StoryNode } from "@/lib/story/schema";
 import { Badge } from "./ui";
 import { NodeCommonFields } from "./NodeCommonFields";
 import { NarrationAppendEditor } from "./NarrationAppendEditor";
+import { DiceNodeEditor } from "./DiceNodeEditor";
 import { EndingNodeEditor } from "./EndingNodeEditor";
 import { SceneNodeEditor } from "./SceneNodeEditor";
 
@@ -47,7 +48,7 @@ export function NodeEditor({
         <SceneNodeEditor act={act} node={node} onChangeNode={onChangeNode} />
       )}
       {node.kind === "dice" && (
-        <p className="text-sm text-ink-soft">Editor de teste de dado em construção.</p>
+        <DiceNodeEditor act={act} node={node} onChangeNode={onChangeNode} />
       )}
     </div>
   );
