@@ -1,68 +1,64 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { fetchSpeechUrl } from "@/lib/client/tts";
 
-// Lê a narração em voz alta usando a Web Speech API do navegador (grátis, voz pt-BR).
-// Divide o texto em frases para contornar o corte de falas longas do Chrome.
+type Status = "idle" | "loading" | "playing";
+
+// Botão "Ouvir": busca o áudio da narração (Edge TTS via /api/tts) e toca.
 export function SpeakButton({ text }: { text: string }) {
-  const [speaking, setSpeaking] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
 
-  // Interrompe a fala ao desmontar.
+  // Interrompe ao desmontar.
   useEffect(() => {
     return () => {
-      if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+      audioRef.current?.pause();
+      audioRef.current = null;
     };
   }, []);
 
   // Ao trocar de cena (texto novo), interrompe a fala anterior.
   useEffect(() => {
-    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    audioRef.current?.pause();
+    audioRef.current = null;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSpeaking(false);
+    setStatus("idle");
   }, [text]);
 
-  function pickPtVoice(synth: SpeechSynthesis): SpeechSynthesisVoice | undefined {
-    const voices = synth.getVoices();
-    return (
-      voices.find((v) => v.lang?.toLowerCase() === "pt-br") ??
-      voices.find((v) => v.lang?.toLowerCase().startsWith("pt"))
-    );
-  }
-
-  function toggle() {
-    const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
-    if (!synth) return;
-    if (synth.speaking || synth.pending) {
-      synth.cancel();
-      setSpeaking(false);
+  async function toggle() {
+    if (status === "loading") return;
+    if (status === "playing") {
+      audioRef.current?.pause();
+      setStatus("idle");
       return;
     }
-    const chunks = (text.match(/[^.!?]+[.!?]*\s*/g) ?? [text])
-      .map((c) => c.trim())
-      .filter(Boolean);
-    const voice = pickPtVoice(synth);
-    chunks.forEach((chunk, i) => {
-      const u = new SpeechSynthesisUtterance(chunk);
-      u.lang = "pt-BR";
-      if (voice) u.voice = voice;
-      u.rate = 0.95;
-      u.pitch = 1;
-      if (i === chunks.length - 1) u.onend = () => setSpeaking(false);
-      u.onerror = () => setSpeaking(false);
-      synth.speak(u);
-    });
-    setSpeaking(true);
+    try {
+      setStatus("loading");
+      const url = await fetchSpeechUrl(text);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => setStatus("idle");
+      audio.onerror = () => setStatus("idle");
+      await audio.play();
+      setStatus("playing");
+    } catch {
+      setStatus("idle");
+    }
   }
 
   if (!text) return null;
 
+  const label = status === "loading" ? "⏳ Gerando…" : status === "playing" ? "⏹ Parar" : "🔊 Ouvir";
+
   return (
     <button
       onClick={toggle}
-      aria-label={speaking ? "Parar narração" : "Ouvir narração"}
-      className="inline-flex items-center gap-1.5 rounded-md border border-edge bg-panel px-3 py-1 text-xs font-semibold text-accent transition hover:border-accent hover:bg-panel-strong"
+      disabled={status === "loading"}
+      aria-label="Ouvir narração"
+      className="inline-flex items-center gap-1.5 rounded-md border border-edge bg-panel px-3 py-1 text-xs font-semibold text-accent transition hover:border-accent hover:bg-panel-strong disabled:opacity-60"
     >
-      {speaking ? "⏹ Parar" : "🔊 Ouvir"}
+      {label}
     </button>
   );
 }
