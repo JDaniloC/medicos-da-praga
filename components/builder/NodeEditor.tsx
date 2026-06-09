@@ -5,7 +5,9 @@
 import type { StoryAct, StoryNode } from "@/lib/story/schema";
 import { Badge } from "./ui";
 import { NodeCommonFields } from "./NodeCommonFields";
+import { NarrationAppendEditor } from "./NarrationAppendEditor";
 import { EndingNodeEditor } from "./EndingNodeEditor";
+import { SceneNodeEditor } from "./SceneNodeEditor";
 
 const KIND_LABEL: Record<StoryNode["kind"], string> = {
   scene: "Cena (escolhas)", dice: "Teste de dado (d20)", ending: "Final",
@@ -32,12 +34,17 @@ export function NodeEditor({
         onChangeNode={onChangeNode}
         onRename={onRename}
       />
+      <NarrationAppendEditor
+        act={act}
+        value={node.narrationAppend}
+        onChange={(narrationAppend) => onChangeNode({ ...node, narrationAppend })}
+      />
       <hr className="border-edge" />
       {node.kind === "ending" && (
         <EndingNodeEditor act={act} node={node} onChangeNode={onChangeNode} />
       )}
       {node.kind === "scene" && (
-        <p className="text-sm text-ink-soft">Editor de escolhas em construção.</p>
+        <SceneNodeEditor act={act} node={node} onChangeNode={onChangeNode} />
       )}
       {node.kind === "dice" && (
         <p className="text-sm text-ink-soft">Editor de teste de dado em construção.</p>

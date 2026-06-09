@@ -2,7 +2,8 @@
 // Lista ordenável de Effects com campos por tipo e condição opcional (when).
 "use client";
 
-import type { Condition, Effect, StoryAct } from "@/lib/story/schema";
+import type { Effect, StoryAct } from "@/lib/story/schema";
+import { setWhen } from "@/lib/builder/condition-utils";
 import { EFFECT_KINDS, convertEffect, defaultEffect, effectKind, type EffectKind } from "@/lib/builder/effect-utils";
 import { flagNames, itemIds, patientIds, treatmentValues } from "@/lib/builder/harvest";
 import { moveItem, removeAt, replaceAt } from "@/lib/builder/immutable";
@@ -15,12 +16,6 @@ const KIND_LABEL: Record<EffectKind, string> = {
   setTreatment: "Registrar tratamento",
   setPatient: "Resultado do paciente",
 };
-
-function withWhen(e: Effect, when: Condition | undefined): Effect {
-  const { when: _drop, ...rest } = e;
-  void _drop;
-  return (when !== undefined ? { ...rest, when } : rest) as Effect;
-}
 
 function EffectFields({
   value, onChange, act,
@@ -155,7 +150,7 @@ export function EffectListEditor({
             <p className="mb-1 text-xs font-semibold text-ink-soft">Condição (opcional — só aplica se verdadeira):</p>
             <ConditionBuilder
               value={e.when}
-              onChange={(when) => update(replaceAt(effects, i, withWhen(e, when)))}
+              onChange={(when) => update(replaceAt(effects, i, setWhen(e, when)))}
               act={act}
               allowEmpty
             />

@@ -54,6 +54,14 @@ export function wrapCondition(c: Condition, wrapper: "not" | "anyOf" | "allOf"):
   return { allOf: [c] };
 }
 
+// Define/remove o `when` opcional de choices, effects e regras de dificuldade,
+// removendo a chave quando indefinido (mantém o JSON salvo limpo).
+export function setWhen<T extends { when?: Condition }>(obj: T, when: Condition | undefined): T {
+  const { when: _drop, ...rest } = obj;
+  void _drop;
+  return (when !== undefined ? { ...rest, when } : rest) as T;
+}
+
 // Inverso do wrap: not e grupos de um único filho devolvem o filho; senão null.
 export function unwrapCondition(c: Condition): Condition | null {
   if ("not" in c) return c.not;
