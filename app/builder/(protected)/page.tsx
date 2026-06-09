@@ -2,6 +2,7 @@
 // Lista de atos — server component, lê direto do Supabase (service role).
 import Link from "next/link";
 import { getServiceClient, hasSupabaseConfig } from "@/lib/supabase/server";
+import { DeleteActButton } from "@/components/builder/DeleteActButton";
 
 type ActRow = { act: number; title: string; updated_at: string };
 
@@ -48,10 +49,10 @@ export default async function BuilderHomePage() {
       ) : (
         <ul className="mt-8 space-y-3">
           {result.acts.map((a) => (
-            <li key={a.act}>
+            <li key={a.act} className="flex items-center gap-3">
               <Link
                 href={`/builder/acts/${a.act}`}
-                className="block rounded-xl border border-edge bg-panel p-5 transition-all hover:border-accent hover:bg-panel-strong hover:shadow-md"
+                className="block min-w-0 flex-1 rounded-xl border border-edge bg-panel p-5 transition-all hover:border-accent hover:bg-panel-strong hover:shadow-md"
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="font-bold text-ink">
@@ -63,6 +64,7 @@ export default async function BuilderHomePage() {
                   Atualizado em {new Date(a.updated_at).toLocaleString("pt-BR")}
                 </p>
               </Link>
+              <DeleteActButton act={a.act} title={a.title} />
             </li>
           ))}
         </ul>

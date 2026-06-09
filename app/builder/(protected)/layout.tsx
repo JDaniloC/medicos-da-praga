@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   title: "Construtor de Atos — O Cerco de Caffa",
 };
 
+// O gate depende do cookie a cada request — sem isso o redirect de login
+// seria pré-renderizado no build e bloquearia até quem está autenticado.
+export const dynamic = "force-dynamic";
+
 export default async function BuilderLayout({ children }: { children: React.ReactNode }) {
   if (!(await isAuthorized())) redirect("/builder/login");
   return (

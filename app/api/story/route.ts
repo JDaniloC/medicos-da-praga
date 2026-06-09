@@ -32,7 +32,8 @@ export async function GET(req: Request) {
   const act = Number(searchParams.get("act") ?? "1");
   try {
     const story = hasSupabaseConfig() ? await readFromSupabase(act) : readSeed(act);
-    return NextResponse.json(story);
+    // A história agora é editável pelo builder: nunca cachear em camadas HTTP.
+    return NextResponse.json(story, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Erro ao carregar a história.";
     return NextResponse.json({ error: message }, { status: 500 });

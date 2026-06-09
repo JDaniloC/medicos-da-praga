@@ -38,13 +38,16 @@ export default function Page() {
     fetchStory(1)
       .then((act) => {
         if (!alive) return;
-        setGraph(buildGraph(act));
+        const g = buildGraph(act);
+        setGraph(g);
         const save = loadSave();
-        if (save) {
+        // Save apontando para nó que não existe mais (história editada no builder): descarta.
+        if (save && g.nodes[save.state.currentNodeId]) {
           setState(save.state);
           setNarration(save.narration ?? "");
         } else {
-          // Se não houver save, toca a música tema de abertura
+          if (save) clearSave();
+          // Sem save válido, toca a música tema de abertura
           playMusic("title-theme");
         }
         setLoaded(true);

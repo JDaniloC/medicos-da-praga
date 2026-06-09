@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { ConditionSchema, type Condition } from "@/lib/story/schema";
 import {
   conditionKind, convertCondition, defaultCondition, unwrapCondition, wrapCondition,
-  CONDITION_KINDS, type ConditionKind,
+  CONDITION_KINDS,
 } from "./condition-utils";
 
 describe("conditionKind", () => {
