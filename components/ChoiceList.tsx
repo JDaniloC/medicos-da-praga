@@ -11,18 +11,18 @@ export function ChoiceList({
   disabled?: boolean;
 }) {
   return (
-    <div className="mt-6 space-y-3">
+    <div className="mt-8 space-y-3">
       {choices.map((c, idx) => (
         <button
           key={c.id}
           disabled={disabled}
           onClick={() => onChoose(c.id)}
-          className="flex w-full items-start gap-3 rounded-lg border border-stone-700 bg-stone-900/60 px-4 py-3 text-left text-stone-100 transition hover:border-[var(--parchment)] hover:bg-stone-800/80 disabled:cursor-not-allowed disabled:opacity-50"
+          className="group flex w-full items-start gap-4 rounded-lg border border-edge bg-panel px-5 py-4 text-left text-ink transition hover:border-accent hover:bg-panel-strong disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
         >
-          <span className="mt-0.5 font-mono text-sm text-[var(--parchment)]">
+          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-edge font-mono text-sm font-bold text-ink-soft group-hover:border-accent group-hover:text-accent">
             {String.fromCharCode(65 + idx)}
           </span>
-          <span>{c.label}</span>
+          <span className="font-semibold leading-relaxed">{c.label}</span>
         </button>
       ))}
     </div>

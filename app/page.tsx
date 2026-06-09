@@ -144,13 +144,13 @@ export default function Page() {
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
       <AssetImage
         path="ui/parchment-texture.webp"
-        className="pointer-events-none fixed inset-0 -z-10 h-full w-full object-cover opacity-[0.05]"
+        className="pointer-events-none fixed inset-0 -z-10 h-full w-full object-cover opacity-[0.1]"
       />
-      <header className="mb-4 flex items-center justify-between border-b border-stone-800 pb-3">
-        <h1 className="text-lg font-bold tracking-wide text-[var(--parchment)]">{engine.graph.title}</h1>
+      <header className="mb-4 flex items-center justify-between border-b border-edge pb-3">
+        <h1 className="text-lg font-bold tracking-wide text-accent">{engine.graph.title}</h1>
         <button
           onClick={restart}
-          className="rounded border border-stone-700 px-3 py-1 text-xs text-stone-400 transition hover:border-stone-500 hover:text-stone-200"
+          className="rounded border border-edge px-3 py-1 text-xs text-ink-soft transition hover:border-accent hover:text-ink"
         >
           Recomeçar
         </button>
@@ -158,7 +158,7 @@ export default function Page() {
 
       <AssetImage
         path="ui/skull-divider.webp"
-        className="ink-asset mx-auto mb-6 h-5 w-auto object-contain opacity-70"
+        className="ink-asset mx-auto mb-10 w-3/4 h-auto object-contain opacity-85"
       />
 
       <div className="grid gap-6 md:grid-cols-[260px_1fr]">
@@ -171,20 +171,22 @@ export default function Page() {
         />
 
         <section>
-          <div className="relative">
-            <SceneImage src={imageUrl(node.image)} />
+          <div className="relative aspect-video w-full">
+            <div className="absolute inset-[11%]">
+              <SceneImage src={imageUrl(node.image)} />
+            </div>
             <AssetImage
               path="ui/frame-ornament.webp"
-              className="ink-asset pointer-events-none absolute inset-0 h-full w-full"
+              className="ink-asset pointer-events-none absolute inset-0 z-10 h-full w-full object-fill"
             />
           </div>
 
           {lastRoll && (
             <div
-              className={`mt-4 rounded-md border px-4 py-2 text-center text-sm font-semibold ${
+              className={`mt-4 rounded-md border-2 px-4 py-2 text-center text-sm font-bold ${
                 lastRoll.success
-                  ? "border-emerald-800 bg-emerald-950/40 text-emerald-300"
-                  : "border-[var(--blood)] bg-red-950/40 text-red-300"
+                  ? "border-success bg-success/10 text-success"
+                  : "border-blood bg-blood/10 text-blood"
               }`}
             >
               🎲 Você tirou {lastRoll.roll} — {lastRoll.success ? "Sucesso" : "Fracasso"}

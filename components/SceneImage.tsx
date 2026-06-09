@@ -7,7 +7,7 @@ export function SceneImage({ src, loading }: { src?: string; loading?: boolean }
   const [failed, setFailed] = useState(false);
   const show = src && !failed;
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-stone-700 bg-stone-900">
+    <div className="relative aspect-video w-full overflow-hidden rounded-md border-2 border-edge bg-panel shadow-sm">
       {show ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -18,7 +18,7 @@ export function SceneImage({ src, loading }: { src?: string; loading?: boolean }
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center">
-          <span className="animate-pulse text-sm text-stone-500">
+          <span className="animate-pulse text-sm text-ink-soft">
             {loading ? "Carregando a cena…" : "Sem imagem"}
           </span>
         </div>

@@ -1,32 +1,58 @@
 @import "tailwindcss";
 
+/* Tema "pergaminho": papel envelhecido + tinta, para casar com a arte P&B de livro-jogo. */
 :root {
-  --background: #0c0a09;
-  --foreground: #e7e0d4;
-  --parchment: #d9c9a3;
-  --blood: #7f1d1d;
+  --background: #f1f5f9;     /* Slate 100 - Papel branco acinzentado */
+  --foreground: #0f172a;     /* Slate 950 - Tinta preta profunda */
+  --ink: #0f172a;
+  --ink-soft: #475569;       /* Slate 600 - Texto secundário */
+  --edge: #cbd5e1;           /* Slate 300 - Bordas sutis */
+  --panel: #ffffff;          /* Branco puro para painéis */
+  --panel-strong: #f8fafc;   /* Slate 50 para destaques */
+  --accent: #1e293b;         /* Slate 800 - Títulos marcantes */
+  --blood: #b91c1c;          /* Vermelho */
+  --success: #15803d;        /* Verde */
+  --parchment: #f1f5f9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-edge: var(--edge);
+  --color-panel: var(--panel);
+  --color-panel-strong: var(--panel-strong);
+  --color-accent: var(--accent);
+  --color-blood: var(--blood);
+  --color-success: var(--success);
+  --color-parchment: var(--parchment);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #1c1714 0%, transparent 60%),
-    var(--background);
+  background-color: var(--background);
+  /* Gradiente linear fixo para evitar qualquer quebra visual */
+  background-image: linear-gradient(to bottom, #ffffff 0%, var(--background) 100%);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Georgia, serif;
+  font-family: Georgia, "Times New Roman", serif;
+  min-height: 100vh;
+  margin: 0;
 }
 
-/* Prosa do narrador: tom de pergaminho, serifada, generosa. */
+/* Arte de linha (ícones, selos, d20, moldura, banner) */
+.ink-asset {
+  mix-blend-mode: multiply;
+}
+
+/* Prosa do narrador: serifada, generosa, cor de tinta. */
 .prose-narrativa {
   font-family: Georgia, "Times New Roman", serif;
-  line-height: 1.75;
+  line-height: 1.8;
   white-space: pre-wrap;
+  color: var(--ink);
 }
 .prose-narrativa p {
   margin-bottom: 1rem;
@@ -39,14 +65,6 @@ body {
 }
 .dice-rolling {
   animation: diceSpin 0.6s ease-in-out infinite;
-}
-
-/* Arte de linha (ícones, selos, d20, decoração) vem em tinta preta sobre branco.
-   Inverte para tinta clara e o blend "screen" deixa o fundo branco transparente,
-   integrando ao tema escuro. */
-.ink-asset {
-  filter: invert(1) brightness(1.08) contrast(1.05);
-  mix-blend-mode: screen;
 }
 
 @keyframes fadeIn {

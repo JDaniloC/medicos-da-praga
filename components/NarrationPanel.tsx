@@ -9,13 +9,13 @@ export function NarrationPanel({
 }) {
   if (loading) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 opacity-40">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-4 w-full animate-pulse rounded bg-stone-800" />
+          <div key={i} className="h-4 w-full animate-pulse rounded bg-edge" />
         ))}
-        <div className="h-4 w-2/3 animate-pulse rounded bg-stone-800" />
+        <div className="h-4 w-2/3 animate-pulse rounded bg-edge" />
       </div>
     );
   }
-  return <div className="prose-narrativa fade-in text-[1.05rem] text-stone-200">{text}</div>;
+  return <div className="prose-narrativa fade-in text-[1.1rem] font-medium text-ink">{text}</div>;
 }
