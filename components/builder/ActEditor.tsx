@@ -8,9 +8,12 @@ import { StoryActSchema, type StoryAct } from "@/lib/story/schema";
 import { validateAct } from "@/lib/story/validate";
 import { errorNodeIndex } from "@/lib/builder/validation-utils";
 import { itemIds } from "@/lib/builder/harvest";
+import { renameNodeId } from "@/lib/builder/act-utils";
 import { ActMetadataForm } from "./ActMetadataForm";
 import { BuilderHeader } from "./BuilderHeader";
 import { ItemsBadgesEditor } from "./ItemsBadgesEditor";
+import { NodeEditor } from "./NodeEditor";
+import { NodeList } from "./NodeList";
 import { TraitsEditor } from "./TraitsEditor";
 import { ValidationPanel } from "./ValidationPanel";
 import { Toast } from "./ui";
@@ -180,8 +183,13 @@ export function ActEditor({ act }: { act: number }) {
             <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wider text-ink-soft">
               Nós ({draft.nodes.length})
             </p>
-            {/* NodeList entra na fase de edição de nós */}
-            <p className="px-3 text-xs text-ink-soft">Em construção.</p>
+            <NodeList
+              act={draft}
+              selectedId={section.type === "node" ? section.id : null}
+              errorCounts={nodeErrorCounts}
+              onSelect={focusNode}
+              onChange={setDraft}
+            />
           </div>
         </aside>
         <main className="min-w-0 flex-1 p-6 fade-in">
@@ -200,7 +208,29 @@ export function ActEditor({ act }: { act: number }) {
             />
           )}
           {section.type === "items" && <ItemsBadgesEditor value={draft} onChange={setDraft} />}
-          {section.type === "node" && <p className="text-ink-soft">Em construção.</p>}
+          {section.type === "node" &&
+            (() => {
+              const node = draft.nodes.find((n) => n.id === section.id);
+              if (!node) {
+                return <p className="text-ink-soft">Este nó não existe mais. Selecione outro na lista.</p>;
+              }
+              return (
+                <NodeEditor
+                  act={draft}
+                  node={node}
+                  onChangeNode={(updated) =>
+                    setDraft({
+                      ...draft,
+                      nodes: draft.nodes.map((n) => (n.id === section.id ? updated : n)),
+                    })
+                  }
+                  onRename={(oldId, newId) => {
+                    setDraft(renameNodeId(draft, oldId, newId));
+                    setSection({ type: "node", id: newId });
+                  }}
+                />
+              );
+            })()}
         </main>
       </div>
       {toast && <Toast message={toast.message} tone={toast.tone} />}
