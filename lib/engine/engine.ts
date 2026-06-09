@@ -4,7 +4,7 @@ import type { StoryGraph } from "../story/graph";
 import { traitDef } from "../story/graph";
 import type { StoryNode, Choice } from "../story/schema";
 import {
-  applyEffects, computeDifficulty, resolveNext, visibleChoices,
+  applyEffects, computeDifficulty, resolveNext, visibleChoices, buildNarration,
 } from "../story/interpreter";
 import { succeeds, rollD20, type Rng } from "./dice";
 
@@ -78,9 +78,14 @@ export function createEngine(graph: StoryGraph) {
     return getNode(state).kind === "ending";
   }
 
+  // Narração final do nó atual (briefing base + trechos condicionais de narrationAppend).
+  function getNarration(state: GameState): string {
+    return buildNarration(getNode(state), state);
+  }
+
   return {
     graph, getNode, createInitialState, getChoices, chooseOption,
-    getDifficulty, getReason, applyDiceRoll, rollAndApply, isEnding,
+    getDifficulty, getReason, applyDiceRoll, rollAndApply, isEnding, getNarration,
   };
 }
 

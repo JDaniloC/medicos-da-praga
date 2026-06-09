@@ -1,11 +1,29 @@
 import { describe, it, expect } from "vitest";
-import { evalCondition, applyEffects, computeDifficulty, resolveNext, visibleChoices } from "./interpreter";
+import { evalCondition, applyEffects, computeDifficulty, resolveNext, visibleChoices, buildNarration } from "./interpreter";
 import type { GameState } from "../engine/types";
-import type { SceneNode } from "./schema";
+import type { SceneNode, StoryNode } from "./schema";
 
 function baseState(over: Partial<GameState> = {}): GameState {
   return { trait: "soldado", inventory: [], currentNodeId: "x", flags: {}, treatments: {}, patients: {}, rolls: [], ...over };
 }
+
+describe("buildNarration", () => {
+  const node = {
+    id: "n", kind: "scene", image: "i", narration: "base",
+    narrationAppend: [
+      { when: { trait: "academico" }, text: "extra-aca" },
+      { when: { trait: "soldado" }, text: "extra-sol" },
+    ],
+    choices: [],
+  } as unknown as StoryNode;
+  it("anexa apenas os trechos cujo when é verdadeiro", () => {
+    expect(buildNarration(node, baseState({ trait: "academico" }))).toBe("base\n\nextra-aca");
+    expect(buildNarration(node, baseState({ trait: "soldado" }))).toBe("base\n\nextra-sol");
+  });
+  it("sem trechos compatíveis retorna só a narração base", () => {
+    expect(buildNarration(node, baseState({ trait: "druida" }))).toBe("base");
+  });
+});
 
 describe("evalCondition", () => {
   it("trait, flag (ausente=false), hasItem", () => {

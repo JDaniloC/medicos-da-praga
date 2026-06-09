@@ -56,7 +56,7 @@ export default function Page() {
       setNarrating(true);
       setNarration("");
       const narr = await fetchNarration({
-        brief: node.narration,
+        brief: engine.getNarration(s),
         worldContext: engine.graph.worldContext,
         traitNome: td.nome,
         traitDescricao: td.descricao,

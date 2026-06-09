@@ -1,5 +1,5 @@
 import type { GameState } from "../engine/types";
-import type { Condition, Effect, Next, Choice, DifficultyRule, SceneNode } from "./schema";
+import type { Condition, Effect, Next, Choice, DifficultyRule, SceneNode, StoryNode } from "./schema";
 import { clampDifficulty } from "../engine/dice";
 
 export function evalCondition(cond: Condition, s: GameState): boolean {
@@ -62,4 +62,13 @@ export function visibleChoices(node: SceneNode, s: GameState): Choice[] {
     if (c.when && !evalCondition(c.when, s)) return false;
     return true;
   });
+}
+
+// Monta a narração final do nó: o briefing base + cada trecho de `narrationAppend`
+// cuja condição é verdadeira no estado atual.
+export function buildNarration(node: StoryNode, s: GameState): string {
+  const extra = (node.narrationAppend ?? [])
+    .filter((a) => evalCondition(a.when, s))
+    .map((a) => a.text);
+  return [node.narration, ...extra].join("\n\n");
 }
