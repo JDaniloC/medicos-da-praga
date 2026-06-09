@@ -1,8 +1,10 @@
 // scripts/seed-story.ts
-import "dotenv/config";
+import dotenv from "dotenv";
 import { readFileSync } from "node:fs";
 import { validateAct } from "../lib/story/validate";
 import { getServiceClient } from "../lib/supabase/server";
+
+dotenv.config({ path: [".env.local", ".env"] });
 
 async function main() {
   const path = process.argv[2];

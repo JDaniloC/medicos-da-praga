@@ -4,10 +4,12 @@
 //   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
 // A key de cada objeto é o caminho relativo à pasta (ex.: images/scenes/cena1.webp -> scenes/cena1.webp),
 // batendo com o que o app monta via NEXT_PUBLIC_R2_BASE_URL + imageUrl(path).
-import "dotenv/config";
+import dotenv from "dotenv";
 import { readdirSync, statSync, readFileSync } from "node:fs";
 import { join, extname, relative, sep } from "node:path";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+dotenv.config({ path: [".env.local", ".env"] });
 
 const root = process.argv[2] ?? "images";
 const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET } = process.env;
