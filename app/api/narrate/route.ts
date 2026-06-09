@@ -1,6 +1,6 @@
 // app/api/narrate/route.ts
 import { NextResponse } from "next/server";
-import { generateNarration } from "@/lib/gemini/client";
+import { generateNarration } from "@/lib/llm/narrator";
 import { buildNarrationPrompt, NARRATOR_SYSTEM, type NarrationInput } from "@/lib/gemini/prompts";
 
 export const runtime = "nodejs";
