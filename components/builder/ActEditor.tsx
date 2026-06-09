@@ -7,8 +7,11 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "rea
 import { StoryActSchema, type StoryAct } from "@/lib/story/schema";
 import { validateAct } from "@/lib/story/validate";
 import { errorNodeIndex } from "@/lib/builder/validation-utils";
+import { itemIds } from "@/lib/builder/harvest";
 import { ActMetadataForm } from "./ActMetadataForm";
 import { BuilderHeader } from "./BuilderHeader";
+import { ItemsBadgesEditor } from "./ItemsBadgesEditor";
+import { TraitsEditor } from "./TraitsEditor";
 import { ValidationPanel } from "./ValidationPanel";
 import { Toast } from "./ui";
 
@@ -189,8 +192,14 @@ export function ActEditor({ act }: { act: number }) {
               nodeIds={draft.nodes.map((n) => n.id)}
             />
           )}
-          {section.type === "traits" && <p className="text-ink-soft">Em construção.</p>}
-          {section.type === "items" && <p className="text-ink-soft">Em construção.</p>}
+          {section.type === "traits" && (
+            <TraitsEditor
+              value={draft.traits}
+              onChange={(traits) => setDraft({ ...draft, traits })}
+              itemOptions={itemIds(draft)}
+            />
+          )}
+          {section.type === "items" && <ItemsBadgesEditor value={draft} onChange={setDraft} />}
           {section.type === "node" && <p className="text-ink-soft">Em construção.</p>}
         </main>
       </div>
