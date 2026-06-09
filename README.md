@@ -2,31 +2,33 @@
 
 Aventura interativa no estilo *Fighting Fantasy*, ambientada numa Guerra dos Cem Anos ficcional
 (Anglia vs. Gália, o Cerco de Caffa e a eclosão da Varíola Negra). O **Gemini** atua como narrador
-(prosa imersiva) e gerador de imagens; toda a lógica do jogo — cenas, traços, modificadores ocultos,
-rolagens de D20 e ramificações — é controlada por uma **engine determinística**, garantindo que a
-história nunca saia dos trilhos.
+(prosa imersiva); toda a lógica do jogo — cenas, traços, modificadores ocultos, rolagens de D20 e
+ramificações — é controlada por uma **engine determinística**, garantindo que a história nunca saia
+dos trilhos.
 
 ## Arquitetura
 
-- **Frontend** (Next.js / React, `app/`): UI do jogo (narração, imagem da cena, retrato, escolhas,
-  dado, inventário).
-- **Engine** (`lib/engine/`): TypeScript puro e testável. É a fonte da verdade do fluxo do jogo.
-- **Proxy Gemini** (`app/api/narrate`, `app/api/image`): rotas de servidor que chamam o Gemini. A
-  chave `GEMINI_API_KEY` fica **só no servidor**, nunca no navegador.
-- **Save** (`lib/storage/`): progresso salvo em `localStorage` (fechar e continuar).
-
-Modelos usados: `gemini-2.5-flash` (texto) e `gemini-2.5-flash-image` / "Nano Banana" (imagem).
+- **Frontend** (Next.js / React, `app/`): UI do jogo.
+- **Engine genérica** (`lib/engine/` + `lib/story/`): interpretador da DSL declarativa. Não conhece
+  o conteúdo — apenas executa o grafo de cenas.
+- **História** (`supabase/`): fonte da verdade no Supabase (tabelas `acts`, `scenes`). O arquivo
+  `supabase/seed/act1.json` dá o seed e serve de fixture de teste.
+- **Proxy Gemini** (`app/api/narrate`): narração ao vivo; `GEMINI_API_KEY` só no servidor.
+- **Leitura da história** (`app/api/story`): lê do Supabase com a service key (server). Sem Supabase
+  configurado, cai no seed local (modo de dev).
+- **Imagens**: estáticas no Cloudflare R2, referenciadas por caminho (`NEXT_PUBLIC_R2_BASE_URL`).
+- **Save** (`lib/storage/`): progresso em `localStorage`.
 
 ## Como rodar localmente
 
 ```bash
 npm install
-cp .env.example .env.local   # e preencha GEMINI_API_KEY
+cp .env.example .env.local   # preencha as chaves (todas opcionais para um teste básico)
 npm run dev                  # http://localhost:3000
 ```
 
-Sem `GEMINI_API_KEY` o jogo ainda roda em **modo de fallback**: a narração exibe os briefings das
-cenas e as imagens ficam vazias — útil para testar a lógica.
+Sem `SUPABASE_URL`, a história é lida do `supabase/seed/act1.json`. Sem `GEMINI_API_KEY`, a narração
+cai em fallback (mostra o briefing). Sem `NEXT_PUBLIC_R2_BASE_URL`, as imagens mostram placeholder.
 
 ## Scripts
 
@@ -34,6 +36,8 @@ cenas e as imagens ficam vazias — útil para testar a lógica.
 - `npm run build` / `npm start` — build e execução de produção
 - `npm test` — testes da engine (Vitest)
 - `npm run lint` — ESLint
+- `npm run validate:story <arquivo>` — valida um JSON de ato (schema + integridade do grafo)
+- `npm run seed:story <arquivo>` — envia um ato validado para o Supabase
 
 ## Deploy (Vercel)
 
@@ -44,19 +48,25 @@ cenas e as imagens ficam vazias — útil para testar a lógica.
 > GitHub Pages não é suportado: ele só serve arquivos estáticos e não consegue hospedar o proxy
 > que protege a chave da API.
 
+## Autoria de novos atos
+
+1. Escreva o ato em prosa e converta para JSON com `docs/authoring/prosa-para-json.md`.
+2. `npm run validate:story supabase/seed/act<N>.json`
+3. `npm run seed:story supabase/seed/act<N>.json`
+4. Gere as imagens das cenas seguindo `docs/assets/art-direction-ato1.md`.
+
 ## Estrutura
 
 ```
-app/                     UI (page.tsx) + rotas de API (proxy Gemini)
-components/              Componentes de UI (cena, dado, escolhas, retrato...)
-lib/engine/              Engine determinística (types, traits, dice, scenes/act1, endings)
-lib/gemini/              Cliente e prompts do Gemini (servidor)
-lib/storage/             Save/carga em localStorage
-lib/client/              Helpers de fetch para as rotas de API
+app/                     UI (page.tsx) + rotas /api/narrate e /api/story
+components/              Componentes de UI
+lib/engine/              Engine genérica (types, dice, engine)
+lib/story/               DSL: schema (Zod), interpretador, grafo, validador
+lib/supabase/            Cliente server-side do Supabase
+lib/gemini/              Cliente e prompts de narração (servidor)
+lib/client/              Helpers de fetch (história, narração)
+lib/images/              Montagem de URL das imagens estáticas (R2)
+scripts/                 validate-story, seed-story
+supabase/                migrations + seed/act1.json (fonte de bootstrap)
+docs/                    specs, plano, guias de autoria e arte
 ```
-
-## Estendendo a campanha
-
-O grafo de cenas é orientado a dados em `lib/engine/scenes/act1.ts`. Para novos atos, crie
-`act2.ts` etc. e registre-os na engine, reutilizando o mesmo motor de estado, D20, prompts e camada
-de imagem.
