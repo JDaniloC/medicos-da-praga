@@ -30,7 +30,7 @@ export function TraitSelect({
 
       <AssetImage
         path="ui/skull-divider.webp"
-        className="ink-asset mx-auto mt-12 mb-4 w-4/5 h-auto object-contain opacity-95"
+        className="ink-asset mx-auto mt-10 mb-2 w-2/3 h-auto object-contain opacity-80"
       />
 
       <h2 className="mt-6 mb-6 text-center text-xl font-bold text-accent uppercase tracking-wider">

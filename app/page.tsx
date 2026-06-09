@@ -25,54 +25,7 @@ export default function Page() {
   const [narration, setNarration] = useState("");
   const [narrating, setNarrating] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [lastRoll, setLastRoll] = useState<{ roll: number; success: boolean } | null>(null);
-  const [loaded, setLoaded] = useState(false);
-
-  const engine = useMemo(() => (graph ? createEngine(graph) : null), [graph]);
-
-  // Carrega a história e o save uma vez.
-  useEffect(() => {
-    let alive = true;
-    fetchStory(1)
-      .then((act) => {
-        if (!alive) return;
-        setGraph(buildGraph(act));
-        const save = loadSave();
-        if (save) {
-          setState(save.state);
-          setNarration(save.narration ?? "");
-        }
-        setLoaded(true);
-      })
-      .catch((e) => { if (alive) { setLoadError(String(e.message ?? e)); setLoaded(true); } });
-    return () => { alive = false; };
-  }, []);
-
-  const loadContent = useCallback(
-    async (s: GameState, lastAction?: string) => {
-      if (!engine) return;
-      const node = engine.getNode(s);
-      const td = traitDef(engine.graph, s.trait);
-      setBusy(true);
-      setNarrating(true);
-      setNarration("");
-      const narr = await fetchNarration({
-        brief: engine.getNarration(s),
-        worldContext: engine.graph.worldContext,
-        traitNome: td.nome,
-        traitDescricao: td.descricao,
-        inventory: s.inventory,
-        inventoryLabels: engine.graph.items,
-        lastAction,
-        isDice: node.kind === "dice",
-      });
-      setNarration(narr);
-      setNarrating(false);
-      setBusy(false);
-      writeSave({ state: s, narration: narr });
-    },
-    [engine]
-  );
+  const [lastRoll, setLastRoll] = useState<{ roll: number; success: boolean; nextState?: GameState } | null>(null);
 
   const selectTrait = useCallback(
     async (trait: string) => {
@@ -84,6 +37,15 @@ export default function Page() {
     },
     [engine, loadContent]
   );
+
+  const confirmRoll = useCallback(async () => {
+    if (!lastRoll?.nextState) return;
+    const next = lastRoll.nextState;
+    const rollDesc = `rolou ${lastRoll.roll} no D20 — ${lastRoll.success ? "sucesso" : "fracasso"}`;
+    setLastRoll(null);
+    setState(next);
+    await loadContent(next, rollDesc);
+  }, [lastRoll, loadContent]);
 
   const handleChoice = useCallback(
     async (choiceId: string) => {
@@ -105,14 +67,10 @@ export default function Page() {
     async (value: number) => {
       if (!engine || !state || busy) return;
       const outcome = engine.applyDiceRoll(state, value);
-      setLastRoll({ roll: outcome.roll, success: outcome.success });
-      setState(outcome.state);
-      await loadContent(
-        outcome.state,
-        `rolou ${outcome.roll} no D20 — ${outcome.success ? "sucesso" : "fracasso"}`
-      );
+      setLastRoll({ roll: outcome.roll, success: outcome.success, nextState: outcome.state });
+      // Removemos o loadContent automático daqui
     },
-    [engine, state, busy, loadContent]
+    [engine, state, busy]
   );
 
   const restart = useCallback(() => {
@@ -121,6 +79,8 @@ export default function Page() {
     setNarration("");
     setLastRoll(null);
   }, []);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!loaded) return null;
   if (loadError) {
@@ -131,6 +91,10 @@ export default function Page() {
   if (!state) {
     return (
       <main className="flex-1">
+        <AssetImage
+          path="ui/parchment-texture.webp"
+          className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.5] object-cover opacity-[0.25] mix-blend-multiply"
+        />
         <TraitSelect traits={engine.graph.traits} onSelect={selectTrait} disabled={busy} />
       </main>
     );
@@ -141,55 +105,100 @@ export default function Page() {
   const td = traitDef(engine.graph, state.trait);
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pt-24 pb-32">
       <AssetImage
         path="ui/parchment-texture.webp"
-        className="pointer-events-none fixed inset-0 -z-10 h-full w-full object-cover opacity-[0.1]"
+        className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.1] object-cover opacity-[0.1] mix-blend-multiply"
       />
-      <header className="mb-4 flex items-center justify-between border-b border-edge pb-3">
-        <h1 className="text-lg font-bold tracking-wide text-accent">{engine.graph.title}</h1>
-        <button
-          onClick={restart}
-          className="rounded border border-edge px-3 py-1 text-xs text-ink-soft transition hover:border-accent hover:text-ink"
-        >
-          Recomeçar
-        </button>
+      <header className="fixed top-0 left-0 right-0 z-40 border-b border-edge bg-background/80 backdrop-blur-sm px-4 py-3">
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-edge bg-panel transition-colors hover:bg-panel-strong md:hidden"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Ver Personagem"
+            >
+              <div className="space-y-1">
+                <div className="h-0.5 w-5 bg-ink"></div>
+                <div className="h-0.5 w-5 bg-ink"></div>
+                <div className="h-0.5 w-5 bg-ink"></div>
+              </div>
+            </button>
+            <h1 className="text-lg font-bold tracking-wide text-accent">{engine.graph.title}</h1>
+          </div>
+          <button
+            onClick={restart}
+            className="rounded border border-edge bg-panel px-3 py-1 text-xs text-ink-soft transition hover:border-accent hover:text-ink"
+          >
+            Recomeçar
+          </button>
+        </div>
       </header>
 
-      <AssetImage
-        path="ui/skull-divider.webp"
-        className="ink-asset mx-auto mb-10 w-3/4 h-auto object-contain opacity-85"
-      />
-
       <div className="grid gap-6 md:grid-cols-[260px_1fr]">
-        <StatusSidebar
-          state={state}
-          traitName={td.nome}
-          items={engine.graph.items}
-          badges={engine.graph.badges}
-          portraitSrc={imageUrl(td.portrait)}
-        />
+        <div
+          className={`fixed inset-0 z-50 transition-all md:relative md:inset-auto md:z-0 md:block ${
+            sidebarOpen ? "visible opacity-100" : "invisible opacity-0 md:visible md:opacity-100"
+          }`}
+        >
+          <div
+            className="absolute inset-0 bg-black/40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div
+            className={`absolute left-0 h-full w-[280px] overflow-y-auto bg-background p-6 transition-transform md:h-auto md:w-full md:translate-x-0 md:bg-transparent md:p-0 ${
+              sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
+            <div className="mb-6 flex items-center justify-between md:hidden">
+              <h2 className="text-xl font-bold text-accent">Status</h2>
+              <button onClick={() => setSidebarOpen(false)} className="text-2xl text-ink">
+                ✕
+              </button>
+            </div>
+            <StatusSidebar
+              state={state}
+              traitName={td.nome}
+              items={engine.graph.items}
+              badges={engine.graph.badges}
+              portraitSrc={imageUrl(td.portrait)}
+            />
+          </div>
+        </div>
 
         <section>
-          <div className="relative aspect-video w-full">
-            <div className="absolute inset-[11%]">
+          <div className="relative overflow-hidden rounded-xl border border-edge/20 shadow-sm bg-white">
+            <div className="scale-[1.5] transition-transform duration-700 grayscale-[0.3] brightness-[1.05] contrast-[1.1]">
               <SceneImage src={imageUrl(node.image)} />
             </div>
-            <AssetImage
-              path="ui/frame-ornament.webp"
-              className="ink-asset pointer-events-none absolute inset-0 z-10 h-full w-full object-fill"
-            />
           </div>
 
           {lastRoll && (
-            <div
-              className={`mt-4 rounded-md border-2 px-4 py-2 text-center text-sm font-bold ${
-                lastRoll.success
-                  ? "border-success bg-success/10 text-success"
-                  : "border-blood bg-blood/10 text-blood"
-              }`}
-            >
-              🎲 Você tirou {lastRoll.roll} — {lastRoll.success ? "Sucesso" : "Fracasso"}
+            <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none backdrop-blur-[2px]">
+              <div className="relative flex flex-col items-center animate-in zoom-in-50 fade-in duration-500">
+                {/* Efeito de brilho de fundo */}
+                <div className={`absolute inset-0 -z-10 blur-3xl opacity-30 rounded-full scale-150 ${lastRoll.success ? "bg-emerald-500" : "bg-red-600"}`} />
+                
+                <div className="relative flex flex-col items-center">
+                  <span className={`text-[10rem] leading-none mb-[-2rem] drop-shadow-2xl filter ${lastRoll.success ? "" : "grayscale-[0.5] contrast-125"}`}>
+                    {lastRoll.success ? "🏆" : "💀"}
+                  </span>
+                  
+                  <div className="text-center">
+                    <h3 className={`text-6xl font-black uppercase tracking-[0.3em] drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] ${lastRoll.success ? "text-emerald-400" : "text-red-500"}`}>
+                      {lastRoll.success ? "Sucesso" : "Fracasso"}
+                    </h3>
+                    
+                    <div className="relative mt-4 flex items-center justify-center">
+                      <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-edge to-transparent opacity-50" />
+                      <p className="mx-6 text-9xl font-mono font-black text-ink drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">
+                        {lastRoll.roll}
+                      </p>
+                      <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-edge to-transparent opacity-50" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -198,7 +207,7 @@ export default function Page() {
           </div>
 
           {node.kind === "scene" && (
-            <ChoiceList choices={choices} onChoose={handleChoice} disabled={busy} />
+            <ChoiceList choices={choices} onChoose={handleChoice} disabled={busy} loading={narrating} />
           )}
           {node.kind === "dice" && (
             <DiceRoller reason={node.reason} onRolled={handleRoll} disabled={busy} />

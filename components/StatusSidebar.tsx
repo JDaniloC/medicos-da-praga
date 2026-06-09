@@ -19,39 +19,46 @@ export function StatusSidebar({
     <aside className="space-y-4">
       <CharacterPortrait src={portraitSrc} traitName={traitName} />
 
-      <div className="rounded-lg border border-edge bg-panel p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-bold uppercase tracking-widest text-ink-soft">
+      <div className="space-y-3">
+        <h3 className="px-1 text-xs font-bold uppercase tracking-widest text-ink-soft">
           Inventário
         </h3>
         {state.inventory.length === 0 ? (
-          <p className="text-sm text-ink-soft italic opacity-60">Vazio</p>
+          <div className="rounded-lg border border-edge bg-panel p-6 text-center shadow-sm">
+            <p className="text-sm text-ink-soft italic opacity-60">Vazio</p>
+          </div>
         ) : (
-          <ul className="space-y-2 text-sm text-ink font-medium">
+          <div className="flex flex-col gap-3">
             {state.inventory.map((i) => (
-              <li key={i} className="flex items-center gap-2">
+              <div key={i} className="flex flex-col items-center rounded-xl border border-edge bg-panel p-6 text-center shadow-sm">
                 <AssetImage
                   path={`ui/icons/${i}.webp`}
-                  className="ink-asset h-7 w-7 shrink-0 object-contain"
-                  fallback={<span className="w-7 text-center text-accent">◆</span>}
+                  className="ink-asset h-20 w-20 shrink-0 object-contain mb-3"
+                  fallback={<span className="text-2xl text-accent mb-3">◆</span>}
                 />
-                {items[i] ?? i}
-              </li>
+                <span className="text-base font-bold text-ink leading-tight">
+                  {items[i] ?? i}
+                </span>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
       {activeBadges.map(([flag, label]) => (
         <div
           key={flag}
-          className="flex items-center gap-2 rounded-lg border-2 border-success bg-success/5 p-3 text-sm text-success font-bold"
+          className="flex flex-col items-center rounded-xl border-2 border-success bg-success/5 p-6 text-center shadow-sm"
         >
           <AssetImage 
             path={`ui/icons/${flag}.webp`} 
-            className="ink-asset h-8 w-8 shrink-0 object-contain" 
+            className="ink-asset h-20 w-20 shrink-0 object-contain mb-3" 
           />
-          <span>
-            Traço adquirido: <strong>{label}</strong>
+          <span className="text-sm font-bold text-success uppercase tracking-wide">
+            Traço adquirido
+          </span>
+          <span className="text-lg font-black text-success leading-tight">
+            {label}
           </span>
         </div>
       ))}
