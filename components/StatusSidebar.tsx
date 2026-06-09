@@ -3,6 +3,7 @@
 
 import type { GameState } from "@/lib/engine/types";
 import { CharacterPortrait } from "./CharacterPortrait";
+import { AssetImage } from "./AssetImage";
 
 export function StatusSidebar({
   state, traitName, items, badges, portraitSrc,
@@ -25,10 +26,14 @@ export function StatusSidebar({
         {state.inventory.length === 0 ? (
           <p className="text-sm text-stone-500">Vazio</p>
         ) : (
-          <ul className="space-y-1 text-sm text-stone-200">
+          <ul className="space-y-2 text-sm text-stone-200">
             {state.inventory.map((i) => (
               <li key={i} className="flex items-center gap-2">
-                <span className="text-[var(--parchment)]">◆</span>
+                <AssetImage
+                  path={`ui/icons/${i}.webp`}
+                  className="ink-asset h-7 w-7 shrink-0 object-contain"
+                  fallback={<span className="w-7 text-center text-[var(--parchment)]">◆</span>}
+                />
                 {items[i] ?? i}
               </li>
             ))}
@@ -37,8 +42,14 @@ export function StatusSidebar({
       </div>
 
       {activeBadges.map(([flag, label]) => (
-        <div key={flag} className="rounded-lg border border-emerald-800 bg-emerald-950/40 p-3 text-sm text-emerald-300">
-          Traço adquirido: <strong>{label}</strong>
+        <div
+          key={flag}
+          className="flex items-center gap-2 rounded-lg border border-emerald-800 bg-emerald-950/40 p-3 text-sm text-emerald-300"
+        >
+          <AssetImage path={`ui/icons/${flag}.webp`} className="ink-asset h-8 w-8 shrink-0 object-contain" />
+          <span>
+            Traço adquirido: <strong>{label}</strong>
+          </span>
         </div>
       ))}
     </aside>

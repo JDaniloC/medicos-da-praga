@@ -9,6 +9,7 @@ import { fetchStory } from "@/lib/client/story";
 import { fetchNarration } from "@/lib/client/api";
 import { imageUrl } from "@/lib/images/assets";
 import { loadSave, writeSave, clearSave } from "@/lib/storage/save";
+import { AssetImage } from "@/components/AssetImage";
 import { TraitSelect } from "@/components/TraitSelect";
 import { StatusSidebar } from "@/components/StatusSidebar";
 import { SceneImage } from "@/components/SceneImage";
@@ -141,7 +142,11 @@ export default function Page() {
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-      <header className="mb-6 flex items-center justify-between border-b border-stone-800 pb-3">
+      <AssetImage
+        path="ui/parchment-texture.webp"
+        className="pointer-events-none fixed inset-0 -z-10 h-full w-full object-cover opacity-[0.05]"
+      />
+      <header className="mb-4 flex items-center justify-between border-b border-stone-800 pb-3">
         <h1 className="text-lg font-bold tracking-wide text-[var(--parchment)]">{engine.graph.title}</h1>
         <button
           onClick={restart}
@@ -150,6 +155,11 @@ export default function Page() {
           Recomeçar
         </button>
       </header>
+
+      <AssetImage
+        path="ui/skull-divider.webp"
+        className="ink-asset mx-auto mb-6 h-5 w-auto object-contain opacity-70"
+      />
 
       <div className="grid gap-6 md:grid-cols-[260px_1fr]">
         <StatusSidebar
@@ -161,7 +171,13 @@ export default function Page() {
         />
 
         <section>
-          <SceneImage src={imageUrl(node.image)} />
+          <div className="relative">
+            <SceneImage src={imageUrl(node.image)} />
+            <AssetImage
+              path="ui/frame-ornament.webp"
+              className="ink-asset pointer-events-none absolute inset-0 h-full w-full"
+            />
+          </div>
 
           {lastRoll && (
             <div

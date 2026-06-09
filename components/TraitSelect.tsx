@@ -2,6 +2,7 @@
 "use client";
 
 import type { TraitDef } from "@/lib/story/schema";
+import { AssetImage } from "./AssetImage";
 
 export function TraitSelect({
   traits, onSelect, disabled,
@@ -12,6 +13,10 @@ export function TraitSelect({
 }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 fade-in">
+      <AssetImage
+        path="ui/banner-title.webp"
+        className="ink-asset mx-auto mb-2 h-28 w-auto object-contain"
+      />
       <h1 className="text-center text-3xl font-bold tracking-wide text-[var(--parchment)]">
         O Cerco de Caffa
       </h1>
@@ -23,7 +28,12 @@ export function TraitSelect({
         Gália. Antes de partir, decida quem você é.
       </p>
 
-      <h2 className="mt-10 mb-4 text-center text-lg font-semibold text-stone-200">
+      <AssetImage
+        path="ui/skull-divider.webp"
+        className="ink-asset mx-auto mt-8 h-6 w-auto object-contain opacity-80"
+      />
+
+      <h2 className="mt-6 mb-4 text-center text-lg font-semibold text-stone-200">
         Escolha o seu Traço Inicial
       </h2>
 
@@ -35,7 +45,13 @@ export function TraitSelect({
             onClick={() => onSelect(t.id)}
             className="group rounded-lg border border-stone-700 bg-stone-900/60 p-5 text-left transition hover:border-[var(--parchment)] hover:bg-stone-800/80 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <span className="block text-lg font-bold text-[var(--parchment)]">{t.nome}</span>
+            <span className="flex items-center gap-3">
+              <AssetImage
+                path={`ui/traits/${t.id}.webp`}
+                className="ink-asset h-12 w-12 shrink-0 object-contain"
+              />
+              <span className="text-lg font-bold text-[var(--parchment)]">{t.nome}</span>
+            </span>
             <span className="mt-2 block text-sm text-stone-300">{t.descricao}</span>
           </button>
         ))}
