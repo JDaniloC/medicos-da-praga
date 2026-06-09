@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# O Cerco de Caffa — Ato 1
 
-## Getting Started
+Aventura interativa no estilo *Fighting Fantasy*, ambientada numa Guerra dos Cem Anos ficcional
+(Anglia vs. Gália, o Cerco de Caffa e a eclosão da Varíola Negra). O **Gemini** atua como narrador
+(prosa imersiva) e gerador de imagens; toda a lógica do jogo — cenas, traços, modificadores ocultos,
+rolagens de D20 e ramificações — é controlada por uma **engine determinística**, garantindo que a
+história nunca saia dos trilhos.
 
-First, run the development server:
+## Arquitetura
+
+- **Frontend** (Next.js / React, `app/`): UI do jogo (narração, imagem da cena, retrato, escolhas,
+  dado, inventário).
+- **Engine** (`lib/engine/`): TypeScript puro e testável. É a fonte da verdade do fluxo do jogo.
+- **Proxy Gemini** (`app/api/narrate`, `app/api/image`): rotas de servidor que chamam o Gemini. A
+  chave `GEMINI_API_KEY` fica **só no servidor**, nunca no navegador.
+- **Save** (`lib/storage/`): progresso salvo em `localStorage` (fechar e continuar).
+
+Modelos usados: `gemini-2.5-flash` (texto) e `gemini-2.5-flash-image` / "Nano Banana" (imagem).
+
+## Como rodar localmente
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # e preencha GEMINI_API_KEY
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sem `GEMINI_API_KEY` o jogo ainda roda em **modo de fallback**: a narração exibe os briefings das
+cenas e as imagens ficam vazias — útil para testar a lógica.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` — servidor de desenvolvimento
+- `npm run build` / `npm start` — build e execução de produção
+- `npm test` — testes da engine (Vitest)
+- `npm run lint` — ESLint
 
-## Learn More
+## Deploy (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+1. Suba o repositório no GitHub e importe na Vercel.
+2. Em **Settings → Environment Variables**, adicione `GEMINI_API_KEY`.
+3. Deploy. As rotas `/api/*` rodam como funções de servidor (proxy seguro).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> GitHub Pages não é suportado: ele só serve arquivos estáticos e não consegue hospedar o proxy
+> que protege a chave da API.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estrutura
 
-## Deploy on Vercel
+```
+app/                     UI (page.tsx) + rotas de API (proxy Gemini)
+components/              Componentes de UI (cena, dado, escolhas, retrato...)
+lib/engine/              Engine determinística (types, traits, dice, scenes/act1, endings)
+lib/gemini/              Cliente e prompts do Gemini (servidor)
+lib/storage/             Save/carga em localStorage
+lib/client/              Helpers de fetch para as rotas de API
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Estendendo a campanha
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O grafo de cenas é orientado a dados em `lib/engine/scenes/act1.ts`. Para novos atos, crie
+`act2.ts` etc. e registre-os na engine, reutilizando o mesmo motor de estado, D20, prompts e camada
+de imagem.

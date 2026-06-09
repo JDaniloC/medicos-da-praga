@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0c0a09;
+  --foreground: #e7e0d4;
+  --parchment: #d9c9a3;
+  --blood: #7f1d1d;
 }
 
 @theme inline {
@@ -12,15 +14,37 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #1c1714 0%, transparent 60%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Georgia, serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Prosa do narrador: tom de pergaminho, serifada, generosa. */
+.prose-narrativa {
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+.prose-narrativa p {
+  margin-bottom: 1rem;
+}
+
+@keyframes diceSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(360deg) scale(1.15); }
+  100% { transform: rotate(720deg) scale(1); }
+}
+.dice-rolling {
+  animation: diceSpin 0.6s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
 }
