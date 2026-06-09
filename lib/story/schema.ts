@@ -78,6 +78,7 @@ export const ResolutionSchema = z.object({
 const BaseNodeFields = {
   id: z.string(),
   image: z.string(),
+  ambient: z.string().optional(),
   narration: z.string(),
   narrationAppend: z
     .array(z.object({ when: ConditionSchema, text: z.string() }).strict())

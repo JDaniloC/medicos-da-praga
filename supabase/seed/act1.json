@@ -9,198 +9,853 @@
     "pocoes_ervas": "Poções de ervas",
     "espada_inferior": "Espada de qualidade inferior"
   },
-  "badges": { "imunizado": "Imunizado" },
+  "badges": {
+    "imunizado": "Imunizado"
+  },
   "traits": [
-    { "id": "druida", "nome": "Druida Aprendiz", "descricao": "Devoto de Eir, a deusa da cura. Confia em rituais, amuletos e ervas mais do que na ciência. Carrega poções de ervas.", "portrait": "portraits/druida.webp", "inventarioInicial": ["pocoes_ervas"] },
-    { "id": "academico", "nome": "Acadêmico Curioso", "descricao": "Mente brilhante e observadora, recém-saído dos bancos de estudo. Tem o estômago fraco diante do horror.", "portrait": "portraits/academico.webp", "inventarioInicial": [] },
-    { "id": "soldado", "nome": "Soldado", "descricao": "Veterano de trincheira que virou médico de campo. Frio sob pressão. Carrega uma espada curta.", "portrait": "portraits/soldado.webp", "inventarioInicial": ["espada_curta"] },
-    { "id": "religioso", "nome": "Religioso", "descricao": "Devoto fervoroso da Fé do Altíssimo. Busca a moralidade e o conforto da alma em meio à carnificina.", "portrait": "portraits/religioso.webp", "inventarioInicial": [] }
+    {
+      "id": "druida",
+      "nome": "Druida Aprendiz",
+      "descricao": "Devoto de Eir, a deusa da cura. Confia em rituais, amuletos e ervas mais do que na ciência. Carrega poções de ervas.",
+      "portrait": "portraits/druida.webp",
+      "inventarioInicial": [
+        "pocoes_ervas"
+      ]
+    },
+    {
+      "id": "academico",
+      "nome": "Acadêmico Curioso",
+      "descricao": "Mente brilhante e observadora, recém-saído dos bancos de estudo. Tem o estômago fraco diante do horror.",
+      "portrait": "portraits/academico.webp",
+      "inventarioInicial": []
+    },
+    {
+      "id": "soldado",
+      "nome": "Soldado",
+      "descricao": "Veterano de trincheira que virou médico de campo. Frio sob pressão. Carrega uma espada curta.",
+      "portrait": "portraits/soldado.webp",
+      "inventarioInicial": [
+        "espada_curta"
+      ]
+    },
+    {
+      "id": "religioso",
+      "nome": "Religioso",
+      "descricao": "Devoto fervoroso da Fé do Altíssimo. Busca a moralidade e o conforto da alma em meio à carnificina.",
+      "portrait": "portraits/religioso.webp",
+      "inventarioInicial": []
+    }
   ],
   "nodes": [
     {
-      "id": "cena1", "kind": "scene", "image": "scenes/cena1.webp",
+      "id": "cena1",
+      "kind": "scene",
+      "image": "scenes/cena1.webp",
       "narration": "Cena 1 — A Estrada para a Nova Anglia. O jogador viaja numa carroça trôpega ao lado do Professor Jonathan de Oxenford, médico-chefe severo em traje completo de Médico da Peste, fiel à Teoria dos Humores e do Miasma. Sob um céu cinzento de fumaça, entre campos de primavera apodrecida, Jonathan testa o aluno expondo essas teorias com arrogância erudita. Narre a jornada de forma crua e histórica, a tensão entre a curiosidade do jovem e a autoridade do mestre. Pare no instante da escolha.",
       "choices": [
-        { "id": "ouvir", "label": "Ouvir atentamente a explicação teórica do Professor", "effects": [{ "grantItem": "bisturi_boa_qualidade" }], "next": "cena2" },
-        { "id": "observar", "label": "Ignorar as teorias e observar o cenário ao redor", "next": "cena2" }
-      ]
+        {
+          "id": "ouvir",
+          "label": "Ouvir atentamente a explicação teórica do Professor",
+          "effects": [
+            {
+              "grantItem": "bisturi_boa_qualidade"
+            }
+          ],
+          "next": "cena2"
+        },
+        {
+          "id": "observar",
+          "label": "Ignorar as teorias e observar o cenário ao redor",
+          "next": "cena2"
+        }
+      ],
+      "ambient": "amb/road"
     },
     {
-      "id": "cena2", "kind": "scene", "image": "scenes/cena2.webp",
+      "id": "cena2",
+      "kind": "scene",
+      "image": "scenes/cena2.webp",
       "narration": "Cena 2 — Os Portões do Acampamento. O ar fede a sangue, excremento e suor; piras de fumaça sobem entre tendas imundas e sentinelas exaustos. O Professor ordena que ambos vistam o traje de Médico da Peste — couro grosso e máscara de bico de pássaro. Narre a opressão do lugar e a ordem dada. Pare na escolha.",
       "choices": [
-        { "id": "vestir", "label": "Vestir o traje de Médico da Peste imediatamente", "effects": [{ "setFlag": "usouTraje", "value": true }], "next": "cena3" },
-        { "id": "recusar", "label": "Rejeitar o traje e seguir com roupas comuns", "effects": [{ "setFlag": "usouTraje", "value": false }], "next": "cena3" },
-        { "id": "repreender", "label": "Repreender o professor publicamente: a máscara insulta a deusa Eir; seus amuletos e ervas afastam a doença", "requiresTrait": "druida", "effects": [{ "setFlag": "usouTraje", "value": false }, { "setFlag": "repreendeuProfessor", "value": true }], "next": "cena3" }
-      ]
+        {
+          "id": "vestir",
+          "label": "Vestir o traje de Médico da Peste imediatamente",
+          "effects": [
+            {
+              "setFlag": "usouTraje",
+              "value": true
+            }
+          ],
+          "next": "cena3"
+        },
+        {
+          "id": "recusar",
+          "label": "Rejeitar o traje e seguir com roupas comuns",
+          "effects": [
+            {
+              "setFlag": "usouTraje",
+              "value": false
+            }
+          ],
+          "next": "cena3"
+        },
+        {
+          "id": "repreender",
+          "label": "Repreender o professor publicamente: a máscara insulta a deusa Eir; seus amuletos e ervas afastam a doença",
+          "requiresTrait": "druida",
+          "effects": [
+            {
+              "setFlag": "usouTraje",
+              "value": false
+            },
+            {
+              "setFlag": "repreendeuProfessor",
+              "value": true
+            }
+          ],
+          "next": "cena3"
+        }
+      ],
+      "ambient": "amb/camp"
     },
     {
-      "id": "cena3", "kind": "scene", "image": "scenes/cena3.webp",
+      "id": "cena3",
+      "kind": "scene",
+      "image": "scenes/cena3.webp",
       "narration": "Cena 3 — O Pátio dos Infelizes. Uma caminhada pelo caos militar insalubre: feridos e doentes no chão enlameado, mercenários mongóis do Canato de Turgis ao fundo. O Professor contextualiza disenteria, traumas e uma 'doença misteriosa' — pústulas horríveis e cheiro de cadáver antes mesmo da morte. Encerre apresentando um único caminho para seguir ao trabalho de campo.",
       "narrationAppend": [
-        { "when": { "trait": "academico" }, "text": "O jogador é Acadêmico Curioso e entende o dialeto dos mercenários do Canato de Turgis; ele os escuta dizer que um de seus homens morreu nas muralhas pela 'Praga da Pradaria Seca'. Narre essa tradução silenciosa e o arrepio da descoberta." }
+        {
+          "when": {
+            "trait": "academico"
+          },
+          "text": "O jogador é Acadêmico Curioso e entende o dialeto dos mercenários do Canato de Turgis; ele os escuta dizer que um de seus homens morreu nas muralhas pela 'Praga da Pradaria Seca'. Narre essa tradução silenciosa e o arrepio da descoberta."
+        }
       ],
       "choices": [
-        { "id": "seguir", "label": "Seguir o Professor até as tendas médicas",
-          "effects": [{ "setFlag": "descobriuPraga", "value": true, "when": { "trait": "academico" } }],
+        {
+          "id": "seguir",
+          "label": "Seguir o Professor até as tendas médicas",
+          "effects": [
+            {
+              "setFlag": "descobriuPraga",
+              "value": true,
+              "when": {
+                "trait": "academico"
+              }
+            }
+          ],
           "next": [
-            { "when": { "allOf": [{ "trait": "druida" }, { "flag": "repreendeuProfessor", "value": true }] }, "goto": "cena4_punicao" },
-            { "when": { "trait": "academico" }, "goto": "cena4_investigacao" },
-            { "default": "cena4_p1" }
-          ] }
-      ]
+            {
+              "when": {
+                "allOf": [
+                  {
+                    "trait": "druida"
+                  },
+                  {
+                    "flag": "repreendeuProfessor",
+                    "value": true
+                  }
+                ]
+              },
+              "goto": "cena4_punicao"
+            },
+            {
+              "when": {
+                "trait": "academico"
+              },
+              "goto": "cena4_investigacao"
+            },
+            {
+              "default": "cena4_p1"
+            }
+          ]
+        }
+      ],
+      "ambient": "amb/camp"
     },
     {
-      "id": "cena4_punicao", "kind": "scene", "image": "scenes/cena4_punicao.webp",
+      "id": "cena4_punicao",
+      "kind": "scene",
+      "image": "scenes/cena4_punicao.webp",
       "narration": "Cena 4 — ROTA DA PUNIÇÃO. Jonathan, vingativo, ordena que o jogador limpe e trate sozinho um ferido crítico isolado, colado a uma latrina imunda. O homem tem diarreia severa e está todo enfaixado — as faixas escondem pústulas da Varíola Negra, mas o jogador NÃO percebe a doença. O paciente vai morrer de qualquer forma; narre a degradação e a morte inevitável. Se o jogador estiver sem traje, sugira sutilmente o perigo do ar e dos fluidos.",
       "choices": [
-        { "id": "continuar", "label": "Recolher-se após a morte do paciente", "effects": [{ "setFlag": "rotaPunicao", "value": true }], "next": "cena5" }
-      ]
+        {
+          "id": "continuar",
+          "label": "Recolher-se após a morte do paciente",
+          "effects": [
+            {
+              "setFlag": "rotaPunicao",
+              "value": true
+            }
+          ],
+          "next": "cena5"
+        }
+      ],
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_investigacao", "kind": "scene", "image": "scenes/cena4_investigacao.webp",
+      "id": "cena4_investigacao",
+      "kind": "scene",
+      "image": "scenes/cena4_investigacao.webp",
       "narration": "Cena 4 — ROTA DO ACADÊMICO. O jogador, curioso e respeitoso, nota um paciente crítico e decide tratá-lo por conta própria. Ele FALHA em salvá-lo, mas ao examinar descobre pústulas horríveis e percebe tratar-se de uma enfermidade nova e mortal. Descreva a náusea do estômago fraco sob a pressão, sem mudar a mecânica. Se sem traje, sugira o risco de contaminação.",
       "choices": [
-        { "id": "continuar", "label": "Anotar a descoberta e deixar o corpo", "effects": [{ "setFlag": "descobriuPraga", "value": true }], "next": "cena5" }
-      ]
+        {
+          "id": "continuar",
+          "label": "Anotar a descoberta e deixar o corpo",
+          "effects": [
+            {
+              "setFlag": "descobriuPraga",
+              "value": true
+            }
+          ],
+          "next": "cena5"
+        }
+      ],
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_p1", "kind": "scene", "image": "scenes/cena4_p1.webp",
+      "id": "cena4_p1",
+      "kind": "scene",
+      "image": "scenes/cena4_p1.webp",
       "narration": "Cena 4 — Paciente 1: um Lanceiro com Disenteria severa, pálido e desidratado num catre sujo. Apresente o caso e pare na escolha de tratamento.",
       "choices": [
-        { "id": "dieta", "label": "Aplicar dieta restritiva e poções amargas", "effects": [{ "setTreatment": "lanceiro", "value": "dieta" }], "next": "cena4_p1_dado" },
-        { "id": "sangria", "label": "Fazer uma sangria", "effects": [{ "setTreatment": "lanceiro", "value": "sangria" }], "next": "cena4_p1_dado" }
-      ]
+        {
+          "id": "dieta",
+          "label": "Aplicar dieta restritiva e poções amargas",
+          "effects": [
+            {
+              "setTreatment": "lanceiro",
+              "value": "dieta"
+            }
+          ],
+          "next": "cena4_p1_dado"
+        },
+        {
+          "id": "sangria",
+          "label": "Fazer uma sangria",
+          "effects": [
+            {
+              "setTreatment": "lanceiro",
+              "value": "sangria"
+            }
+          ],
+          "next": "cena4_p1_dado"
+        }
+      ],
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_p1_dado", "kind": "dice", "image": "scenes/cena4_p1_dado.webp",
+      "id": "cena4_p1_dado",
+      "kind": "dice",
+      "image": "scenes/cena4_p1_dado.webp",
       "reason": "Tratamento do Lanceiro (Disenteria)",
       "narration": "Conduza a tensão do tratamento do Lanceiro até o instante imediatamente anterior à rolagem do D20.",
-      "difficulty": { "base": 10, "rules": [
-        { "when": { "treatment": { "lanceiro": "sangria" } }, "set": 13 },
-        { "when": { "allOf": [{ "trait": "druida" }, { "treatment": { "lanceiro": "dieta" } }] }, "delta": -3 }
-      ] },
+      "difficulty": {
+        "base": 10,
+        "rules": [
+          {
+            "when": {
+              "treatment": {
+                "lanceiro": "sangria"
+              }
+            },
+            "set": 13
+          },
+          {
+            "when": {
+              "allOf": [
+                {
+                  "trait": "druida"
+                },
+                {
+                  "treatment": {
+                    "lanceiro": "dieta"
+                  }
+                }
+              ]
+            },
+            "delta": -3
+          }
+        ]
+      },
       "resolve": {
-        "onSuccess": { "effects": [{ "setPatient": "lanceiro", "value": "sucesso" }], "goto": "cena4_p2" },
-        "onFail": { "effects": [{ "setPatient": "lanceiro", "value": "fracasso" }], "goto": "cena4_p2" }
-      }
+        "onSuccess": {
+          "effects": [
+            {
+              "setPatient": "lanceiro",
+              "value": "sucesso"
+            }
+          ],
+          "goto": "cena4_p2"
+        },
+        "onFail": {
+          "effects": [
+            {
+              "setPatient": "lanceiro",
+              "value": "fracasso"
+            }
+          ],
+          "goto": "cena4_p2"
+        }
+      },
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_p2", "kind": "scene", "image": "scenes/cena4_p2.webp",
+      "id": "cena4_p2",
+      "kind": "scene",
+      "image": "scenes/cena4_p2.webp",
       "narration": "Cena 4 — Paciente 2: um Arqueiro com uma flecha inflamada cravada no ombro, a ferida purulenta. Apresente o caso e pare na escolha.",
       "choices": [
-        { "id": "extracao", "label": "Extração rápida com bisturi e cauterização", "effects": [{ "setTreatment": "arqueiro", "value": "extracao" }], "next": "cena4_p2_dado" },
-        { "id": "pasta", "label": "Aplicar pasta de ervas sobre a ferida", "effects": [{ "setTreatment": "arqueiro", "value": "pasta" }], "next": "cena4_p2_dado" }
-      ]
+        {
+          "id": "extracao",
+          "label": "Extração rápida com bisturi e cauterização",
+          "effects": [
+            {
+              "setTreatment": "arqueiro",
+              "value": "extracao"
+            }
+          ],
+          "next": "cena4_p2_dado"
+        },
+        {
+          "id": "pasta",
+          "label": "Aplicar pasta de ervas sobre a ferida",
+          "effects": [
+            {
+              "setTreatment": "arqueiro",
+              "value": "pasta"
+            }
+          ],
+          "next": "cena4_p2_dado"
+        }
+      ],
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_p2_dado", "kind": "dice", "image": "scenes/cena4_p2_dado.webp",
+      "id": "cena4_p2_dado",
+      "kind": "dice",
+      "image": "scenes/cena4_p2_dado.webp",
       "reason": "Cirurgia do Arqueiro (Flecha Inflamada)",
       "narration": "Conduza a tensão da cirurgia do Arqueiro até o instante imediatamente anterior à rolagem do D20.",
-      "difficulty": { "base": 12, "rules": [
-        { "when": { "allOf": [{ "treatment": { "arqueiro": "extracao" } }, { "hasItem": "bisturi_boa_qualidade" }] }, "delta": -3 },
-        { "when": { "allOf": [{ "treatment": { "arqueiro": "extracao" } }, { "anyOf": [{ "trait": "soldado" }, { "trait": "academico" }] }] }, "delta": -2 },
-        { "when": { "allOf": [{ "treatment": { "arqueiro": "pasta" } }, { "trait": "druida" }] }, "delta": -3 }
-      ] },
+      "difficulty": {
+        "base": 12,
+        "rules": [
+          {
+            "when": {
+              "allOf": [
+                {
+                  "treatment": {
+                    "arqueiro": "extracao"
+                  }
+                },
+                {
+                  "hasItem": "bisturi_boa_qualidade"
+                }
+              ]
+            },
+            "delta": -3
+          },
+          {
+            "when": {
+              "allOf": [
+                {
+                  "treatment": {
+                    "arqueiro": "extracao"
+                  }
+                },
+                {
+                  "anyOf": [
+                    {
+                      "trait": "soldado"
+                    },
+                    {
+                      "trait": "academico"
+                    }
+                  ]
+                }
+              ]
+            },
+            "delta": -2
+          },
+          {
+            "when": {
+              "allOf": [
+                {
+                  "treatment": {
+                    "arqueiro": "pasta"
+                  }
+                },
+                {
+                  "trait": "druida"
+                }
+              ]
+            },
+            "delta": -3
+          }
+        ]
+      },
       "resolve": {
-        "onSuccess": { "effects": [{ "setPatient": "arqueiro", "value": "sucesso" }], "goto": "cena4_p3" },
-        "onFail": { "effects": [{ "setPatient": "arqueiro", "value": "fracasso" }], "goto": "cena4_p3" }
-      }
+        "onSuccess": {
+          "effects": [
+            {
+              "setPatient": "arqueiro",
+              "value": "sucesso"
+            }
+          ],
+          "goto": "cena4_p3"
+        },
+        "onFail": {
+          "effects": [
+            {
+              "setPatient": "arqueiro",
+              "value": "fracasso"
+            }
+          ],
+          "goto": "cena4_p3"
+        }
+      },
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_p3", "kind": "scene", "image": "scenes/cena4_p3.webp",
+      "id": "cena4_p3",
+      "kind": "scene",
+      "image": "scenes/cena4_p3.webp",
       "narration": "Cena 4 — Paciente 3: um Cavaleiro com fratura exposta na perna, osso à mostra, em dor intensa. Apresente o caso e pare na escolha.",
       "choices": [
-        { "id": "orar", "label": "Orar com o cavaleiro antes de qualquer procedimento, e então limpar e talar", "requiresTrait": "religioso", "effects": [{ "setTreatment": "cavaleiro", "value": "orar_talas" }], "next": "cena4_p3_dado" },
-        { "id": "talas", "label": "Limpeza profunda da ferida e imobilização com talas", "effects": [{ "setTreatment": "cavaleiro", "value": "talas" }], "next": "cena4_p3_dado" },
-        { "id": "amputar", "label": "Amputação rápida com a serra de ossos", "effects": [{ "setTreatment": "cavaleiro", "value": "amputar" }], "next": "cena4_p3_dado" }
-      ]
+        {
+          "id": "orar",
+          "label": "Orar com o cavaleiro antes de qualquer procedimento, e então limpar e talar",
+          "requiresTrait": "religioso",
+          "effects": [
+            {
+              "setTreatment": "cavaleiro",
+              "value": "orar_talas"
+            }
+          ],
+          "next": "cena4_p3_dado"
+        },
+        {
+          "id": "talas",
+          "label": "Limpeza profunda da ferida e imobilização com talas",
+          "effects": [
+            {
+              "setTreatment": "cavaleiro",
+              "value": "talas"
+            }
+          ],
+          "next": "cena4_p3_dado"
+        },
+        {
+          "id": "amputar",
+          "label": "Amputação rápida com a serra de ossos",
+          "effects": [
+            {
+              "setTreatment": "cavaleiro",
+              "value": "amputar"
+            }
+          ],
+          "next": "cena4_p3_dado"
+        }
+      ],
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena4_p3_dado", "kind": "dice", "image": "scenes/cena4_p3_dado.webp",
+      "id": "cena4_p3_dado",
+      "kind": "dice",
+      "image": "scenes/cena4_p3_dado.webp",
       "reason": "Tratamento do Cavaleiro (Fratura Exposta)",
       "narration": "Conduza a tensão do tratamento do Cavaleiro até o instante imediatamente anterior à rolagem do D20.",
-      "difficulty": { "base": 13, "rules": [
-        { "when": { "treatment": { "cavaleiro": "amputar" } }, "set": 11 },
-        { "when": { "treatment": { "cavaleiro": "orar_talas" } }, "set": 10 }
-      ] },
+      "difficulty": {
+        "base": 13,
+        "rules": [
+          {
+            "when": {
+              "treatment": {
+                "cavaleiro": "amputar"
+              }
+            },
+            "set": 11
+          },
+          {
+            "when": {
+              "treatment": {
+                "cavaleiro": "orar_talas"
+              }
+            },
+            "set": 10
+          }
+        ]
+      },
       "resolve": {
-        "onSuccess": { "effects": [{ "setPatient": "cavaleiro", "value": "sucesso" }], "goto": "cena5" },
-        "onFail": { "effects": [{ "setPatient": "cavaleiro", "value": "fracasso" }], "goto": "cena5" }
-      }
+        "onSuccess": {
+          "effects": [
+            {
+              "setPatient": "cavaleiro",
+              "value": "sucesso"
+            }
+          ],
+          "goto": "cena5"
+        },
+        "onFail": {
+          "effects": [
+            {
+              "setPatient": "cavaleiro",
+              "value": "fracasso"
+            }
+          ],
+          "goto": "cena5"
+        }
+      },
+      "ambient": "amb/hospital"
     },
     {
-      "id": "cena5", "kind": "scene", "image": "scenes/cena5.webp",
+      "id": "cena5",
+      "kind": "scene",
+      "image": "scenes/cena5.webp",
       "narration": "Cena 5 — A Tenda do Barão. O Capitão de Turgis propõe usar catapultas para lançar cadáveres infectados com a Varíola Negra para dentro das muralhas de Caffa. Debate feroz com TRÊS oposições claras: o Professor (miasma científico), o Druida do conselho (ira dos deuses antigos por quebrar ritos fúnebres) e o Sacerdote da Fé do Altíssimo (pecado moral e punição divina). O Barão pede o voto do jogador. Pare na escolha.",
       "choices": [
-        { "id": "calar", "label": "Calar-se e deixar o Barão decidir sozinho", "next": "ramb_intro" },
-        { "id": "professor", "label": "Apoiar o Professor contra a tática", "next": "ramb_intro" },
-        { "id": "sacerdote", "label": "Apoiar os Sacerdotes, apelando à ira divina contra o sacrilégio", "requiresTrait": "religioso", "next": "ramb_intro" },
-        { "id": "tatica", "label": "Apoiar a tática militar: na guerra secular não há moralidade, apenas a vitória", "requiresTrait": "soldado", "effects": [{ "setFlag": "taticaAceita", "value": true }, { "setFlag": "amizadeCanato", "value": true }], "next": "cena5_duelo" }
-      ]
+        {
+          "id": "calar",
+          "label": "Calar-se e deixar o Barão decidir sozinho",
+          "next": "ramb_intro"
+        },
+        {
+          "id": "professor",
+          "label": "Apoiar o Professor contra a tática",
+          "next": "ramb_intro"
+        },
+        {
+          "id": "sacerdote",
+          "label": "Apoiar os Sacerdotes, apelando à ira divina contra o sacrilégio",
+          "requiresTrait": "religioso",
+          "next": "ramb_intro"
+        },
+        {
+          "id": "tatica",
+          "label": "Apoiar a tática militar: na guerra secular não há moralidade, apenas a vitória",
+          "requiresTrait": "soldado",
+          "effects": [
+            {
+              "setFlag": "taticaAceita",
+              "value": true
+            },
+            {
+              "setFlag": "amizadeCanato",
+              "value": true
+            }
+          ],
+          "next": "cena5_duelo"
+        }
+      ],
+      "ambient": "amb/camp"
     },
     {
-      "id": "cena5_duelo", "kind": "dice", "image": "scenes/cena5_duelo.webp",
+      "id": "cena5_duelo",
+      "kind": "dice",
+      "image": "scenes/cena5_duelo.webp",
       "reason": "Duelo amistoso com o Capitão do Canato",
       "narration": "O jogador ganhou a amizade do Canato e é convidado para um duelo amistoso (sem risco de morte) antes do ataque. Narre o duelo e conduza até o instante anterior à rolagem do D20. Vencer rende um presente.",
-      "difficulty": { "base": 11, "rules": [{ "when": { "trait": "soldado" }, "set": 7 }] },
+      "difficulty": {
+        "base": 11,
+        "rules": [
+          {
+            "when": {
+              "trait": "soldado"
+            },
+            "set": 7
+          }
+        ]
+      },
       "resolve": {
-        "onSuccess": { "effects": [{ "grantItem": "espada_inferior" }], "goto": "rama_intro" },
-        "onFail": { "goto": "rama_intro" }
-      }
+        "onSuccess": {
+          "effects": [
+            {
+              "grantItem": "espada_inferior"
+            }
+          ],
+          "goto": "rama_intro"
+        },
+        "onFail": {
+          "goto": "rama_intro"
+        }
+      },
+      "ambient": "amb/camp"
     },
     {
-      "id": "rama_intro", "kind": "scene", "image": "scenes/rama_intro.webp",
+      "id": "rama_intro",
+      "kind": "scene",
+      "image": "scenes/rama_intro.webp",
       "narration": "RAMIFICAÇÃO A. Os corpos infectados são lançados. Caffa cai em um mês devido à peste. O Professor, clérigos e nobres menores abandonam o cerco em desgosto profundo, deixando o jogador para trás. Os soldados de Anglia marcham para casa levando o patógeno. Conduza até o momento em que o próprio jogador precisa resistir à contaminação.",
-      "choices": [ { "id": "marchar", "label": "Marchar para casa junto à tropa infectada", "next": "rama_infeccao" } ]
+      "choices": [
+        {
+          "id": "marchar",
+          "label": "Marchar para casa junto à tropa infectada",
+          "next": "rama_infeccao"
+        }
+      ],
+      "ambient": "amb/siege-fall"
     },
     {
-      "id": "rama_infeccao", "kind": "dice", "image": "scenes/rama_infeccao.webp",
+      "id": "rama_infeccao",
+      "kind": "dice",
+      "image": "scenes/rama_infeccao.webp",
       "reason": "Teste de Resistência à Infecção",
       "narration": "Teste de Resistência à Infecção. Conduza a estrada de volta para casa, cheia de soldados febris, até o instante anterior à rolagem do D20.",
       "narrationAppend": [
-        { "when": { "anyOf": [{ "flag": "usouTraje", "value": false }, { "flag": "rotaPunicao", "value": true }] }, "text": "O jogador esteve exposto sem proteção adequada — a contaminação é quase inevitável." },
-        { "when": { "not": { "anyOf": [{ "flag": "usouTraje", "value": false }, { "flag": "rotaPunicao", "value": true }] } }, "text": "O jogador se protegeu razoavelmente durante o cerco." }
+        {
+          "when": {
+            "anyOf": [
+              {
+                "flag": "usouTraje",
+                "value": false
+              },
+              {
+                "flag": "rotaPunicao",
+                "value": true
+              }
+            ]
+          },
+          "text": "O jogador esteve exposto sem proteção adequada — a contaminação é quase inevitável."
+        },
+        {
+          "when": {
+            "not": {
+              "anyOf": [
+                {
+                  "flag": "usouTraje",
+                  "value": false
+                },
+                {
+                  "flag": "rotaPunicao",
+                  "value": true
+                }
+              ]
+            }
+          },
+          "text": "O jogador se protegeu razoavelmente durante o cerco."
+        }
       ],
-      "difficulty": { "base": 6, "rules": [
-        { "when": { "anyOf": [{ "flag": "usouTraje", "value": false }, { "flag": "rotaPunicao", "value": true }] }, "set": 18 }
-      ] },
-      "resolve": { "onSuccess": { "goto": "ending_a_saudavel" }, "onFail": { "goto": "rama_sobrevivencia" } }
+      "difficulty": {
+        "base": 6,
+        "rules": [
+          {
+            "when": {
+              "anyOf": [
+                {
+                  "flag": "usouTraje",
+                  "value": false
+                },
+                {
+                  "flag": "rotaPunicao",
+                  "value": true
+                }
+              ]
+            },
+            "set": 18
+          }
+        ]
+      },
+      "resolve": {
+        "onSuccess": {
+          "goto": "ending_a_saudavel"
+        },
+        "onFail": {
+          "goto": "rama_sobrevivencia"
+        }
+      },
+      "ambient": "amb/plague-march"
     },
     {
-      "id": "rama_sobrevivencia", "kind": "dice", "image": "scenes/rama_sobrevivencia.webp",
+      "id": "rama_sobrevivencia",
+      "kind": "dice",
+      "image": "scenes/rama_sobrevivencia.webp",
       "reason": "Teste de Sobrevivência Final (Varíola Negra)",
       "narration": "O jogador contraiu a Varíola Negra. Este é o teste de Sobrevivência Final: apenas 19 ou 20 o salvam. Narre a febre e o delírio até o instante anterior à rolagem do D20.",
-      "difficulty": { "base": 19 },
+      "difficulty": {
+        "base": 19
+      },
       "resolve": {
-        "onSuccess": { "effects": [{ "setFlag": "imunizado", "value": true }], "goto": "ending_a_imune" },
-        "onFail": { "goto": "ending_a_morte" }
-      }
+        "onSuccess": {
+          "effects": [
+            {
+              "setFlag": "imunizado",
+              "value": true
+            }
+          ],
+          "goto": "ending_a_imune"
+        },
+        "onFail": {
+          "goto": "ending_a_morte"
+        }
+      },
+      "ambient": "amb/plague-march"
     },
     {
-      "id": "ramb_intro", "kind": "scene", "image": "scenes/ramb_intro.webp",
+      "id": "ramb_intro",
+      "kind": "scene",
+      "image": "scenes/ramb_intro.webp",
       "narration": "RAMIFICAÇÃO B. O Barão proíbe o uso dos corpos. À noite, mercenários e soldados desesperados se revoltam, quebram as ordens e começam a carregar as catapultas na calada. O acampamento racha e uma guerra civil violenta irrompe na escuridão. O jogador é atacado no caos. Conduza até o confronto.",
-      "choices": [ { "id": "lutar", "label": "Defender-se dos atacantes no escuro", "next": "ramb_combate" } ]
+      "choices": [
+        {
+          "id": "lutar",
+          "label": "Defender-se dos atacantes no escuro",
+          "next": "ramb_combate"
+        }
+      ],
+      "ambient": "amb/night-revolt"
     },
     {
-      "id": "ramb_combate", "kind": "dice", "image": "scenes/ramb_combate.webp",
+      "id": "ramb_combate",
+      "kind": "dice",
+      "image": "scenes/ramb_combate.webp",
       "reason": "Combate na Revolta Noturna",
       "narration": "Combate na revolta noturna. Conduza a luta desesperada na escuridão até o instante anterior à rolagem do D20.",
       "narrationAppend": [
-        { "when": { "anyOf": [{ "trait": "soldado" }, { "hasItem": "espada_curta" }, { "hasItem": "espada_inferior" }] }, "text": "O jogador está bem armado e treinado para isto." },
-        { "when": { "allOf": [{ "not": { "trait": "soldado" } }, { "not": { "hasItem": "espada_curta" } }, { "not": { "hasItem": "espada_inferior" } }, { "hasItem": "bisturi_boa_qualidade" }] }, "text": "O jogador só tem uma lâmina pequena para se defender." },
-        { "when": { "allOf": [{ "not": { "trait": "soldado" } }, { "not": { "hasItem": "espada_curta" } }, { "not": { "hasItem": "espada_inferior" } }, { "not": { "hasItem": "bisturi_boa_qualidade" } }] }, "text": "O jogador está praticamente desarmado." }
+        {
+          "when": {
+            "anyOf": [
+              {
+                "trait": "soldado"
+              },
+              {
+                "hasItem": "espada_curta"
+              },
+              {
+                "hasItem": "espada_inferior"
+              }
+            ]
+          },
+          "text": "O jogador está bem armado e treinado para isto."
+        },
+        {
+          "when": {
+            "allOf": [
+              {
+                "not": {
+                  "trait": "soldado"
+                }
+              },
+              {
+                "not": {
+                  "hasItem": "espada_curta"
+                }
+              },
+              {
+                "not": {
+                  "hasItem": "espada_inferior"
+                }
+              },
+              {
+                "hasItem": "bisturi_boa_qualidade"
+              }
+            ]
+          },
+          "text": "O jogador só tem uma lâmina pequena para se defender."
+        },
+        {
+          "when": {
+            "allOf": [
+              {
+                "not": {
+                  "trait": "soldado"
+                }
+              },
+              {
+                "not": {
+                  "hasItem": "espada_curta"
+                }
+              },
+              {
+                "not": {
+                  "hasItem": "espada_inferior"
+                }
+              },
+              {
+                "not": {
+                  "hasItem": "bisturi_boa_qualidade"
+                }
+              }
+            ]
+          },
+          "text": "O jogador está praticamente desarmado."
+        }
       ],
-      "difficulty": { "base": 19, "rules": [
-        { "when": { "hasItem": "bisturi_boa_qualidade" }, "set": 12 },
-        { "when": { "anyOf": [{ "trait": "soldado" }, { "hasItem": "espada_curta" }, { "hasItem": "espada_inferior" }] }, "set": 5 }
-      ] },
-      "resolve": { "onSuccess": { "goto": "ending_b_sobrevive" }, "onFail": { "goto": "ending_b_morte" } }
+      "difficulty": {
+        "base": 19,
+        "rules": [
+          {
+            "when": {
+              "hasItem": "bisturi_boa_qualidade"
+            },
+            "set": 12
+          },
+          {
+            "when": {
+              "anyOf": [
+                {
+                  "trait": "soldado"
+                },
+                {
+                  "hasItem": "espada_curta"
+                },
+                {
+                  "hasItem": "espada_inferior"
+                }
+              ]
+            },
+            "set": 5
+          }
+        ]
+      },
+      "resolve": {
+        "onSuccess": {
+          "goto": "ending_b_sobrevive"
+        },
+        "onFail": {
+          "goto": "ending_b_morte"
+        }
+      },
+      "ambient": "amb/night-revolt"
     },
-    { "id": "ending_a_saudavel", "kind": "ending", "image": "scenes/ending_a_saudavel.webp", "outcome": "saudavel", "title": "Sobrevivente — De volta são e salvo", "narration": "FINAL (Ramificação A). O jogador resistiu à infecção e volta saudável, ouvindo boatos sombrios da peste se espalhando pelas cidades civis. Encerre o ATO 1 com gravidade." },
-    { "id": "ending_a_imune", "kind": "ending", "image": "scenes/ending_a_imune.webp", "outcome": "imune", "title": "Imunizado — Sobreviveu à Varíola Negra", "narration": "FINAL (Ramificação A). O jogador contraiu a Varíola Negra mas sobreviveu, marcado por cicatrizes para sempre. Ganha o traço definitivo [Imunizado]. Encerre o ATO 1." },
-    { "id": "ending_a_morte", "kind": "ending", "image": "scenes/ending_a_morte.webp", "outcome": "gameover", "title": "Game Over — Morte pela Varíola Negra", "narration": "GAME OVER (Ramificação A). O jogador sucumbe à Varíola Negra numa morte trágica e realista. Narre o fim sem piedade." },
-    { "id": "ending_b_sobrevive", "kind": "ending", "image": "scenes/ending_b_sobrevive.webp", "outcome": "sobrevive", "title": "Sobrevivente da Revolta", "narration": "FINAL (Ramificação B). O jogador sobrevive ao combate da revolta noturna, ferido mas vivo entre as cinzas do acampamento dividido. Encerre o ATO 1." },
-    { "id": "ending_b_morte", "kind": "ending", "image": "scenes/ending_b_morte.webp", "outcome": "gameover", "title": "Game Over — Morto na Revolta", "narration": "GAME OVER (Ramificação B). O jogador morre no caos da revolta. Detalhe como a morte do médico impediu que a cura fosse descoberta, enquanto a praga destruía os dois reinos." }
+    {
+      "id": "ending_a_saudavel",
+      "kind": "ending",
+      "image": "scenes/ending_a_saudavel.webp",
+      "outcome": "saudavel",
+      "title": "Sobrevivente — De volta são e salvo",
+      "narration": "FINAL (Ramificação A). O jogador resistiu à infecção e volta saudável, ouvindo boatos sombrios da peste se espalhando pelas cidades civis. Encerre o ATO 1 com gravidade."
+    },
+    {
+      "id": "ending_a_imune",
+      "kind": "ending",
+      "image": "scenes/ending_a_imune.webp",
+      "outcome": "imune",
+      "title": "Imunizado — Sobreviveu à Varíola Negra",
+      "narration": "FINAL (Ramificação A). O jogador contraiu a Varíola Negra mas sobreviveu, marcado por cicatrizes para sempre. Ganha o traço definitivo [Imunizado]. Encerre o ATO 1."
+    },
+    {
+      "id": "ending_a_morte",
+      "kind": "ending",
+      "image": "scenes/ending_a_morte.webp",
+      "outcome": "gameover",
+      "title": "Game Over — Morte pela Varíola Negra",
+      "narration": "GAME OVER (Ramificação A). O jogador sucumbe à Varíola Negra numa morte trágica e realista. Narre o fim sem piedade."
+    },
+    {
+      "id": "ending_b_sobrevive",
+      "kind": "ending",
+      "image": "scenes/ending_b_sobrevive.webp",
+      "outcome": "sobrevive",
+      "title": "Sobrevivente da Revolta",
+      "narration": "FINAL (Ramificação B). O jogador sobrevive ao combate da revolta noturna, ferido mas vivo entre as cinzas do acampamento dividido. Encerre o ATO 1."
+    },
+    {
+      "id": "ending_b_morte",
+      "kind": "ending",
+      "image": "scenes/ending_b_morte.webp",
+      "outcome": "gameover",
+      "title": "Game Over — Morto na Revolta",
+      "narration": "GAME OVER (Ramificação B). O jogador morre no caos da revolta. Detalhe como a morte do médico impediu que a cura fosse descoberta, enquanto a praga destruía os dois reinos."
+    }
   ]
 }

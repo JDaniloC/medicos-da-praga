@@ -17,6 +17,8 @@ import { NarrationPanel } from "@/components/NarrationPanel";
 import { ChoiceList } from "@/components/ChoiceList";
 import { DiceRoller } from "@/components/DiceRoller";
 import { GameOver } from "@/components/GameOver";
+import { AudioToggle } from "@/components/AudioToggle";
+import { setAmbient, playSfx, playMusic } from "@/lib/audio/engine";
 
 export default function Page() {
   const [graph, setGraph] = useState<StoryGraph | null>(null);
@@ -26,10 +28,77 @@ export default function Page() {
   const [narrating, setNarrating] = useState(false);
   const [busy, setBusy] = useState(false);
   const [lastRoll, setLastRoll] = useState<{ roll: number; success: boolean; nextState?: GameState } | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  const engine = useMemo(() => (graph ? createEngine(graph) : null), [graph]);
+
+  // Carrega a história e o save uma vez.
+  useEffect(() => {
+    let alive = true;
+    fetchStory(1)
+      .then((act) => {
+        if (!alive) return;
+        setGraph(buildGraph(act));
+        const save = loadSave();
+        if (save) {
+          setState(save.state);
+          setNarration(save.narration ?? "");
+        } else {
+          // Se não houver save, toca a música tema de abertura
+          playMusic("title-theme");
+        }
+        setLoaded(true);
+      })
+      .catch((e) => { if (alive) { setLoadError(String(e.message ?? e)); setLoaded(true); } });
+    return () => { alive = false; };
+  }, []);
+
+  const loadContent = useCallback(
+    async (s: GameState, lastAction?: string) => {
+      if (!engine) return;
+      const node = engine.getNode(s);
+      const td = traitDef(engine.graph, s.trait);
+      
+      // Áudio ambiente da cena
+      if (node.kind === "ending") {
+        setAmbient(null);
+        const death = node.outcome === "gameover";
+        playSfx(death ? "ui/game-over" : "ui/ending-survive");
+        playMusic(death ? "death-theme" : "triumph-theme");
+      } else {
+        setAmbient(node.ambient ?? null);
+        
+        // Stingers de Evento baseados no ID da cena
+        if (s.nodeId === "ramb_combate") playSfx("event/combat");
+        if (s.nodeId === "rama_intro") playSfx("event/catapult");
+        if (s.nodeId.startsWith("cena4") && s.nodeId.endsWith("_dado")) playSfx("event/surgery");
+      }
+      
+      setBusy(true);
+      setNarrating(true);
+      setNarration("");
+      const narr = await fetchNarration({
+        brief: engine.getNarration(s),
+        worldContext: engine.graph.worldContext,
+        traitNome: td.nome,
+        traitDescricao: td.descricao,
+        inventory: s.inventory,
+        inventoryLabels: engine.graph.items,
+        lastAction,
+        isDice: node.kind === "dice",
+      });
+      setNarration(narr);
+      setNarrating(false);
+      setBusy(false);
+      writeSave({ state: s, narration: narr });
+    },
+    [engine]
+  );
 
   const selectTrait = useCallback(
     async (trait: string) => {
       if (!engine) return;
+      playSfx("ui/trait-select");
       const s = engine.createInitialState(trait);
       setState(s);
       setLastRoll(null);
@@ -42,10 +111,12 @@ export default function Page() {
     if (!lastRoll?.nextState) return;
     const next = lastRoll.nextState;
     const rollDesc = `rolou ${lastRoll.roll} no D20 — ${lastRoll.success ? "sucesso" : "fracasso"}`;
+    playSfx("ui/scene-transition");
+    if (state && next.inventory.length > state.inventory.length) playSfx("ui/item-get");
     setLastRoll(null);
     setState(next);
     await loadContent(next, rollDesc);
-  }, [lastRoll, loadContent]);
+  }, [lastRoll, loadContent, state]);
 
   const handleChoice = useCallback(
     async (choiceId: string) => {
@@ -56,6 +127,8 @@ export default function Page() {
           ? engine.getChoices(state).find((c) => c.id === choiceId)?.label
           : undefined;
       const next = engine.chooseOption(state, choiceId);
+      playSfx("ui/choice-select");
+      if (next.inventory.length > state.inventory.length) playSfx("ui/item-get");
       setState(next);
       setLastRoll(null);
       await loadContent(next, label);
@@ -67,6 +140,7 @@ export default function Page() {
     async (value: number) => {
       if (!engine || !state || busy) return;
       const outcome = engine.applyDiceRoll(state, value);
+      playSfx(outcome.success ? "ui/dice-success" : "ui/dice-failure");
       setLastRoll({ roll: outcome.roll, success: outcome.success, nextState: outcome.state });
       // Removemos o loadContent automático daqui
     },
@@ -75,6 +149,7 @@ export default function Page() {
 
   const restart = useCallback(() => {
     clearSave();
+    setAmbient(null);
     setState(null);
     setNarration("");
     setLastRoll(null);
@@ -115,7 +190,10 @@ export default function Page() {
           <div className="flex items-center gap-3">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-edge bg-panel transition-colors hover:bg-panel-strong md:hidden"
-              onClick={() => setSidebarOpen(true)}
+              onClick={() => {
+                playSfx("ui/click-soft");
+                setSidebarOpen(true);
+              }}
               aria-label="Ver Personagem"
             >
               <div className="space-y-1">
@@ -126,12 +204,18 @@ export default function Page() {
             </button>
             <h1 className="text-lg font-bold tracking-wide text-accent">{engine.graph.title}</h1>
           </div>
-          <button
-            onClick={restart}
-            className="rounded border border-edge bg-panel px-3 py-1 text-xs text-ink-soft transition hover:border-accent hover:text-ink"
-          >
-            Recomeçar
-          </button>
+          <div className="flex items-center gap-2">
+            <AudioToggle />
+            <button
+              onClick={() => {
+                playSfx("ui/click-soft");
+                restart();
+              }}
+              className="rounded border border-edge bg-panel px-3 py-1 text-xs text-ink-soft transition hover:border-accent hover:text-ink"
+            >
+              Recomeçar
+            </button>
+          </div>
         </div>
       </header>
 
@@ -167,40 +251,11 @@ export default function Page() {
         </div>
 
         <section>
-          <div className="relative overflow-hidden rounded-xl border border-edge/20 shadow-sm bg-white">
+          <div className="relative overflow-hidden rounded-xl border border-edge/20 shadow-sm bg-white mb-10">
             <div className="scale-[1.5] transition-transform duration-700 grayscale-[0.3] brightness-[1.05] contrast-[1.1]">
               <SceneImage src={imageUrl(node.image)} />
             </div>
           </div>
-
-          {lastRoll && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none backdrop-blur-[2px]">
-              <div className="relative flex flex-col items-center animate-in zoom-in-50 fade-in duration-500">
-                {/* Efeito de brilho de fundo */}
-                <div className={`absolute inset-0 -z-10 blur-3xl opacity-30 rounded-full scale-150 ${lastRoll.success ? "bg-emerald-500" : "bg-red-600"}`} />
-                
-                <div className="relative flex flex-col items-center">
-                  <span className={`text-[10rem] leading-none mb-[-2rem] drop-shadow-2xl filter ${lastRoll.success ? "" : "grayscale-[0.5] contrast-125"}`}>
-                    {lastRoll.success ? "🏆" : "💀"}
-                  </span>
-                  
-                  <div className="text-center">
-                    <h3 className={`text-6xl font-black uppercase tracking-[0.3em] drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] ${lastRoll.success ? "text-emerald-400" : "text-red-500"}`}>
-                      {lastRoll.success ? "Sucesso" : "Fracasso"}
-                    </h3>
-                    
-                    <div className="relative mt-4 flex items-center justify-center">
-                      <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-edge to-transparent opacity-50" />
-                      <p className="mx-6 text-9xl font-mono font-black text-ink drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">
-                        {lastRoll.roll}
-                      </p>
-                      <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-edge to-transparent opacity-50" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className="mt-4">
             <NarrationPanel text={narration} loading={narrating} />
@@ -210,7 +265,13 @@ export default function Page() {
             <ChoiceList choices={choices} onChoose={handleChoice} disabled={busy} loading={narrating} />
           )}
           {node.kind === "dice" && (
-            <DiceRoller reason={node.reason} onRolled={handleRoll} disabled={busy} />
+            <DiceRoller
+              reason={node.reason}
+              onRolled={handleRoll}
+              disabled={busy}
+              result={lastRoll}
+              onConfirm={confirmRoll}
+            />
           )}
           {node.kind === "ending" && (
             <GameOver title={node.title} outcome={node.outcome} onRestart={restart} />

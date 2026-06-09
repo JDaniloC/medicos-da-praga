@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { fetchSpeechUrl } from "@/lib/client/tts";
+import { duckAmbient } from "@/lib/audio/engine";
 
 type Status = "idle" | "loading" | "playing";
 
@@ -15,6 +16,7 @@ export function SpeakButton({ text }: { text: string }) {
     return () => {
       audioRef.current?.pause();
       audioRef.current = null;
+      duckAmbient(false);
     };
   }, []);
 
@@ -22,6 +24,7 @@ export function SpeakButton({ text }: { text: string }) {
   useEffect(() => {
     audioRef.current?.pause();
     audioRef.current = null;
+    duckAmbient(false);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatus("idle");
   }, [text]);
@@ -30,6 +33,7 @@ export function SpeakButton({ text }: { text: string }) {
     if (status === "loading") return;
     if (status === "playing") {
       audioRef.current?.pause();
+      duckAmbient(false);
       setStatus("idle");
       return;
     }
@@ -38,11 +42,19 @@ export function SpeakButton({ text }: { text: string }) {
       const url = await fetchSpeechUrl(text);
       const audio = new Audio(url);
       audioRef.current = audio;
-      audio.onended = () => setStatus("idle");
-      audio.onerror = () => setStatus("idle");
+      audio.onended = () => {
+        duckAmbient(false);
+        setStatus("idle");
+      };
+      audio.onerror = () => {
+        duckAmbient(false);
+        setStatus("idle");
+      };
       await audio.play();
+      duckAmbient(true);
       setStatus("playing");
     } catch {
+      duckAmbient(false);
       setStatus("idle");
     }
   }

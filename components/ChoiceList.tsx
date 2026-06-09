@@ -2,6 +2,7 @@
 "use client";
 
 import type { Choice } from "@/lib/story/schema";
+import { playSfx } from "@/lib/audio/engine";
 
 export function ChoiceList({
   choices, onChoose, disabled, loading,
@@ -23,12 +24,14 @@ export function ChoiceList({
       </div>
     );
   }
+
   return (
     <div className="mt-16 space-y-6 px-2 pb-20">
       {choices.map((c, idx) => (
         <button
           key={c.id}
           disabled={disabled}
+          onMouseEnter={() => playSfx("ui/paper-hover")}
           onClick={() => onChoose(c.id)}
           className="group flex w-full items-start gap-4 rounded-xl border border-edge bg-panel px-6 py-5 text-left text-ink transition-all hover:scale-[1.01] hover:border-accent hover:bg-panel-strong hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 shadow-md"
         >

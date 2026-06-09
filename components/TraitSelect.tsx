@@ -3,6 +3,7 @@
 
 import type { TraitDef } from "@/lib/story/schema";
 import { AssetImage } from "./AssetImage";
+import { playSfx } from "@/lib/audio/engine";
 
 export function TraitSelect({
   traits, onSelect, disabled,
@@ -42,6 +43,7 @@ export function TraitSelect({
           <button
             key={t.id}
             disabled={disabled}
+            onMouseEnter={() => playSfx("ui/paper-hover")}
             onClick={() => onSelect(t.id)}
             className="group relative overflow-hidden rounded-xl border border-edge bg-panel p-8 text-center transition-all hover:scale-[1.02] hover:border-accent hover:bg-panel-strong hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
           >
