@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createEngine } from "@/lib/engine/engine";
 import { buildGraph, traitDef, type StoryGraph } from "@/lib/story/graph";
 import type { GameState } from "@/lib/engine/types";
@@ -44,7 +44,7 @@ export default function Page() {
   // Marca se a primeira narração da partida já foi resolvida. Só antes disso a tela
   // de carregamento cheia aparece — nas transições seguintes os skeletons preservam
   // o contexto visual da cena.
-  const firstNarrationDone = useRef(false);
+  const [firstNarrationDone, setFirstNarrationDone] = useState(false);
 
   const engine = useMemo(() => (graph ? createEngine(graph) : null), [graph]);
 
@@ -63,7 +63,7 @@ export default function Page() {
           setNarration(save.narration ?? "");
           // Save restaurado já traz narração: nada é gerado, então a próxima
           // transição é "do meio do jogo" e não deve abrir a tela cheia.
-          firstNarrationDone.current = true;
+          setFirstNarrationDone(true);
         } else {
           if (save) clearSave();
           // Sem save válido, toca a música tema de abertura
@@ -123,7 +123,7 @@ export default function Page() {
         setBusy(false);
       }
 
-      firstNarrationDone.current = true;
+      setFirstNarrationDone(true);
       writeSave({ state: s, narration: narr });
 
       // Gera desde já todos os futuros imediatos: quando o jogador escolher, o
@@ -188,7 +188,7 @@ export default function Page() {
   const restart = useCallback(() => {
     clearSave();
     clearNarrationCache();
-    firstNarrationDone.current = false;
+    setFirstNarrationDone(false);
     setAmbient(null);
     setState(null);
     setNarration("");
@@ -221,8 +221,7 @@ export default function Page() {
   }
 
   // Primeira narração da partida: a única espera pelo LLM que sobra no fluxo normal.
-  // eslint-disable-next-line react-hooks/refs -- leitura intencional: não deve causar re-render.
-  if (narrating && !firstNarrationDone.current) {
+  if (narrating && !firstNarrationDone) {
     const inicial = engine.getNode(state);
     const traco = traitDef(engine.graph, state.trait);
     return (
