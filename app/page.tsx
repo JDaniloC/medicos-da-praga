@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createEngine } from "@/lib/engine/engine";
 import { buildGraph, traitDef, type StoryGraph } from "@/lib/story/graph";
 import type { GameState } from "@/lib/engine/types";
@@ -41,6 +41,10 @@ export default function Page() {
   // de carregamento cheia aparece — nas transições seguintes os skeletons preservam
   // o contexto visual da cena.
   const [firstNarrationDone, setFirstNarrationDone] = useState(false);
+
+  // Bumped em restart(): permite que um loadContent órfão (de antes do "Recomeçar")
+  // reconheça que a partida mudou e desista antes de mexer em estado ou no save.
+  const loadGenerationRef = useRef(0);
 
   const engine = useMemo(() => (graph ? createEngine(graph) : null), [graph]);
 
@@ -85,6 +89,9 @@ export default function Page() {
   const loadContent = useCallback(
     async (s: GameState, lastAction?: string) => {
       if (!engine || !s) return;
+      // Capturada antes do único await abaixo: se um "Recomeçar" bumped o contador
+      // enquanto esperávamos o narrador, esta chamada está órfã da partida anterior.
+      const generation = loadGenerationRef.current;
       const node = engine.getNode(s);
 
       // Áudio ambiente da cena
@@ -118,6 +125,9 @@ export default function Page() {
         setNarrating(true);
         setNarration("");
         narr = await requestNarration(input).catch(() => input.brief);
+        // A partida pode ter sido reiniciada durante a espera: se foi, esta chamada
+        // está órfã e não pode mais mexer em estado nem ressuscitar o save limpo.
+        if (loadGenerationRef.current !== generation) return;
         setNarration(narr);
         setNarrating(false);
         setBusy(false);
@@ -186,9 +196,15 @@ export default function Page() {
   );
 
   const restart = useCallback(() => {
+    loadGenerationRef.current++;
     clearSave();
     clearNarrationCache();
     setFirstNarrationDone(false);
+    // Sem isto, um loadContent em voo que pousa depois do restart poderia deixar
+    // `busy`/`narrating` presos em true — e TraitSelect é renderizado com
+    // disabled={busy}, o que travaria o jogador impedido de começar de novo.
+    setBusy(false);
+    setNarrating(false);
     setAmbient(null);
     setState(null);
     setNarration("");
