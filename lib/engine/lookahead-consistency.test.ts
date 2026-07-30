@@ -20,8 +20,12 @@ const key = (input: NarrationInput) => buildNarrationPrompt(input);
 // rolagem (o BFS nunca terminaria) e não entra no prompt. As chaves dos Records são
 // ordenadas porque a ordem de inserção varia conforme o caminho percorrido.
 function stateKey(s: GameState): string {
+  // JSON.stringify em vez de juntar `chave=valor` com vírgula: um flag ou tratamento
+  // cujo nome contivesse "," ou "=" colidiria dois estados distintos nessa chave e
+  // encolheria silenciosamente a cobertura do BFS — a falha errada para o único
+  // teste que garante o design inteiro.
   const flat = (o: Record<string, string | boolean>) =>
-    Object.keys(o).sort().map((k) => `${k}=${String(o[k])}`).join(",");
+    JSON.stringify(Object.entries(o).sort());
   return [
     s.trait,
     s.currentNodeId,
@@ -81,7 +85,7 @@ describe("consistência entre pré-geração e transição real", () => {
 
       if (node.kind === "scene") {
         for (const c of engine.getChoices(s)) {
-          // Exatamente o que `handleChoice` fará em app/page.tsx.
+          // Exatamente o que `handleChoice` faz em app/page.tsx.
           const real = narrationInputFor(engine, engine.chooseOption(s, c.id), c.label);
           expect(previstas.has(key(real))).toBe(true);
           transicoesVerificadas++;
@@ -92,7 +96,7 @@ describe("consistência entre pré-geração e transição real", () => {
         // Qualquer valor que o jogador tire tem de cair numa das 2 chaves previstas.
         for (let roll = 1; roll <= 20; roll++) {
           const outcome = engine.applyDiceRoll(s, roll);
-          // Exatamente o que `confirmRoll` fará em app/page.tsx.
+          // Exatamente o que `confirmRoll` faz em app/page.tsx.
           const real = narrationInputFor(
             engine,
             outcome.state,

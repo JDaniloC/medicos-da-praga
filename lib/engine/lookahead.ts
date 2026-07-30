@@ -7,8 +7,7 @@ import { traitDef } from "../story/graph";
 import type { NarrationInput } from "../gemini/prompts";
 
 // Rótulo da ação de um teste de dado, sem o valor rolado: ele só existe depois da
-// rolagem e tornaria a chave do cache impossível de prever. Nada se perde — o
-// narrador já é proibido de citar números (regra 2 do NARRATOR_SYSTEM).
+// rolagem e tornaria a chave do cache impossível de prever.
 // Fonte única: a UI usa esta mesma função ao confirmar a rolagem.
 export function diceActionLabel(success: boolean): string {
   return success ? "teve sucesso no teste" : "fracassou no teste";

@@ -39,7 +39,8 @@ export default function Page() {
 
   // Marca se a primeira narração da partida já foi resolvida. Só antes disso a tela
   // de carregamento cheia aparece — nas transições seguintes os skeletons preservam
-  // o contexto visual da cena.
+  // o contexto visual da cena. É state (não ref) porque o valor é lido durante o
+  // render logo abaixo — um ref ali dispararia o lint react-hooks/refs.
   const [firstNarrationDone, setFirstNarrationDone] = useState(false);
 
   // Bumped em restart(): permite que um loadContent órfão (de antes do "Recomeçar")
@@ -332,7 +333,9 @@ export default function Page() {
           </div>
 
           <div className="mt-4">
-            <NarrationPanel text={narration} loading={narrating} />
+            {/* key força remontagem a cada nó: sem ela, um acerto de cache pula a
+                fase de loading e o React reaproveita a div, perdendo o fade-in. */}
+            <NarrationPanel key={node.id} text={narration} loading={narrating} />
           </div>
 
           {node.kind === "scene" && (
