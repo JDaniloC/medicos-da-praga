@@ -9,14 +9,10 @@ import { fetchStory } from "@/lib/client/story";
 import {
   requestNarration,
   peekNarration,
-  primeNarration,
   clearNarrationCache,
 } from "@/lib/client/narration-cache";
-import {
-  narrationInputFor,
-  nextNarrationInputs,
-  diceActionLabel,
-} from "@/lib/engine/lookahead";
+import { primeNextNarrations } from "@/lib/client/prefetch";
+import { narrationInputFor, diceActionLabel } from "@/lib/engine/lookahead";
 import { imageUrl } from "@/lib/images/assets";
 import { loadSave, writeSave, clearSave } from "@/lib/storage/save";
 import { AssetImage } from "@/components/AssetImage";
@@ -64,6 +60,10 @@ export default function Page() {
           // Save restaurado já traz narração: nada é gerado, então a próxima
           // transição é "do meio do jogo" e não deve abrir a tela cheia.
           setFirstNarrationDone(true);
+          // O `engine` memoizado ainda não existe neste efeito: monta um local só
+          // para pré-gerar os futuros do nó restaurado, senão o primeiro clique
+          // após recarregar a página paga a espera cheia que a feature existe pra evitar.
+          primeNextNarrations(createEngine(g), save.state);
         } else {
           if (save) clearSave();
           // Sem save válido, toca a música tema de abertura
@@ -128,7 +128,7 @@ export default function Page() {
 
       // Gera desde já todos os futuros imediatos: quando o jogador escolher, o
       // texto já existe. Finais não geram nada — é o que limita o custo.
-      for (const proxima of nextNarrationInputs(engine, s)) primeNarration(proxima);
+      primeNextNarrations(engine, s);
     },
     [engine]
   );
