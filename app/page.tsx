@@ -20,6 +20,7 @@ import {
 import { imageUrl } from "@/lib/images/assets";
 import { loadSave, writeSave, clearSave } from "@/lib/storage/save";
 import { AssetImage } from "@/components/AssetImage";
+import { StoryLoading } from "@/components/StoryLoading";
 import { TraitSelect } from "@/components/TraitSelect";
 import { StatusSidebar } from "@/components/StatusSidebar";
 import { SceneImage } from "@/components/SceneImage";
@@ -196,7 +197,8 @@ export default function Page() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  if (!loaded) return null;
+  // A história ainda está sendo buscada: não há nó, traço nem título disponíveis.
+  if (!loaded) return <StoryLoading message="abrindo a crônica" />;
   if (loadError) {
     return (
       <main className="mx-auto max-w-xl p-8 text-center text-red-300">
@@ -215,6 +217,20 @@ export default function Page() {
         />
         <TraitSelect traits={engine.graph.traits} onSelect={selectTrait} disabled={busy} />
       </main>
+    );
+  }
+
+  // Primeira narração da partida: a única espera pelo LLM que sobra no fluxo normal.
+  // eslint-disable-next-line react-hooks/refs -- leitura intencional: não deve causar re-render.
+  if (narrating && !firstNarrationDone.current) {
+    const inicial = engine.getNode(state);
+    const traco = traitDef(engine.graph, state.trait);
+    return (
+      <StoryLoading
+        sceneSrc={imageUrl(inicial.image)}
+        portraitSrc={imageUrl(traco.portrait)}
+        traitName={traco.nome}
+      />
     );
   }
 
