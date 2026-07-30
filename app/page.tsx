@@ -1,12 +1,22 @@
 // app/page.tsx
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createEngine } from "@/lib/engine/engine";
 import { buildGraph, traitDef, type StoryGraph } from "@/lib/story/graph";
 import type { GameState } from "@/lib/engine/types";
 import { fetchStory } from "@/lib/client/story";
-import { fetchNarration } from "@/lib/client/api";
+import {
+  requestNarration,
+  peekNarration,
+  primeNarration,
+  clearNarrationCache,
+} from "@/lib/client/narration-cache";
+import {
+  narrationInputFor,
+  nextNarrationInputs,
+  diceActionLabel,
+} from "@/lib/engine/lookahead";
 import { imageUrl } from "@/lib/images/assets";
 import { loadSave, writeSave, clearSave } from "@/lib/storage/save";
 import { AssetImage } from "@/components/AssetImage";
@@ -30,6 +40,11 @@ export default function Page() {
   const [lastRoll, setLastRoll] = useState<{ roll: number; success: boolean; nextState?: GameState } | null>(null);
   const [loaded, setLoaded] = useState(false);
 
+  // Marca se a primeira narração da partida já foi resolvida. Só antes disso a tela
+  // de carregamento cheia aparece — nas transições seguintes os skeletons preservam
+  // o contexto visual da cena.
+  const firstNarrationDone = useRef(false);
+
   const engine = useMemo(() => (graph ? createEngine(graph) : null), [graph]);
 
   // Carrega a história e o save uma vez.
@@ -45,6 +60,9 @@ export default function Page() {
         if (save && g.nodes[save.state.currentNodeId]) {
           setState(save.state);
           setNarration(save.narration ?? "");
+          // Save restaurado já traz narração: nada é gerado, então a próxima
+          // transição é "do meio do jogo" e não deve abrir a tela cheia.
+          firstNarrationDone.current = true;
         } else {
           if (save) clearSave();
           // Sem save válido, toca a música tema de abertura
@@ -67,8 +85,7 @@ export default function Page() {
     async (s: GameState, lastAction?: string) => {
       if (!engine || !s) return;
       const node = engine.getNode(s);
-      const td = traitDef(engine.graph, s.trait);
-      
+
       // Áudio ambiente da cena
       if (node.kind === "ending") {
         setAmbient(null);
@@ -87,23 +104,30 @@ export default function Page() {
         }
       }
       
-      setBusy(true);
-      setNarrating(true);
-      setNarration("");
-      const narr = await fetchNarration({
-        brief: engine.getNarration(s),
-        worldContext: engine.graph.worldContext,
-        traitNome: td.nome,
-        traitDescricao: td.descricao,
-        inventory: s.inventory,
-        inventoryLabels: engine.graph.items,
-        lastAction,
-        isDice: node.kind === "dice",
-      });
-      setNarration(narr);
-      setNarrating(false);
-      setBusy(false);
+      const input = narrationInputFor(engine, s, lastAction);
+      const pronta = peekNarration(input);
+      let narr: string;
+
+      if (pronta) {
+        // Já pré-gerada: entra na hora, sem piscar o skeleton por um frame.
+        narr = pronta;
+        setNarration(narr);
+      } else {
+        setBusy(true);
+        setNarrating(true);
+        setNarration("");
+        narr = await requestNarration(input).catch(() => input.brief);
+        setNarration(narr);
+        setNarrating(false);
+        setBusy(false);
+      }
+
+      firstNarrationDone.current = true;
       writeSave({ state: s, narration: narr });
+
+      // Gera desde já todos os futuros imediatos: quando o jogador escolher, o
+      // texto já existe. Finais não geram nada — é o que limita o custo.
+      for (const proxima of nextNarrationInputs(engine, s)) primeNarration(proxima);
     },
     [engine]
   );
@@ -123,7 +147,8 @@ export default function Page() {
   const confirmRoll = useCallback(async () => {
     if (!lastRoll?.nextState) return;
     const next = lastRoll.nextState;
-    const rollDesc = `rolou ${lastRoll.roll} no D20 — ${lastRoll.success ? "sucesso" : "fracasso"}`;
+    // Mesmo rótulo que a pré-geração usou — é o que faz a chave do cache bater.
+    const rollDesc = diceActionLabel(lastRoll.success);
     playSfx("ui/scene-transition");
     if (state && next.inventory.length > state.inventory.length) playSfx("ui/item-get");
     setLastRoll(null);
@@ -161,6 +186,8 @@ export default function Page() {
 
   const restart = useCallback(() => {
     clearSave();
+    clearNarrationCache();
+    firstNarrationDone.current = false;
     setAmbient(null);
     setState(null);
     setNarration("");

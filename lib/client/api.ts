@@ -16,12 +16,3 @@ export async function fetchNarrationOrThrow(args: NarrationInput): Promise<strin
   if (!text) throw new Error("O narrador devolveu texto vazio.");
   return text;
 }
-
-// Retorna a prosa do narrador. Em falha (ex.: sem API key), devolve o briefing como fallback.
-export async function fetchNarration(args: NarrationInput): Promise<string> {
-  try {
-    return await fetchNarrationOrThrow(args);
-  } catch {
-    return args.brief;
-  }
-}
