@@ -26,13 +26,16 @@ export function requestNarration(input: NarrationInput): Promise<string> {
 
   const promise = fetchNarrationOrThrow(input).then(
     (text) => {
-      // Pode ter sido limpo no meio do caminho (Recomeçar): aí não repovoa.
+      // Só mexe na entrada se ela ainda for a desta chamada. Um "Recomeçar" no meio
+      // de uma geração deixa a antiga órfã: ela não pode sobrescrever a nova.
       const entry = cache.get(key);
-      if (entry) entry.text = text;
+      if (entry?.promise === promise) entry.text = text;
       return text;
     },
     (err) => {
-      cache.delete(key);
+      // Mesma razão: uma geração órfã que falha não pode apagar a entrada válida.
+      const entry = cache.get(key);
+      if (entry?.promise === promise) cache.delete(key);
       throw err;
     }
   );

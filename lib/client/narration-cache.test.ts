@@ -72,6 +72,73 @@ describe("requestNarration", () => {
     await expect(requestNarration(input("cena X"))).rejects.toThrow();
     expect(peekNarration(input("cena X"))).toBeNull();
   });
+
+  it("uma geração órfã que resolve não sobrescreve a entrada válida", async () => {
+    let resolveFirst!: (r: Response) => void;
+    let resolveSecond!: (r: Response) => void;
+    let callCount = 0;
+
+    fetchMock.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return new Promise<Response>((r) => { resolveFirst = r; });
+      return new Promise<Response>((r) => { resolveSecond = r; });
+    });
+
+    // Primeira chamada, fetch em voo.
+    const first = requestNarration(input("cena X"));
+
+    // Limpa o cache.
+    clearNarrationCache();
+
+    // Segunda chamada com o mesmo input (chave idêntica).
+    const second = requestNarration(input("cena X"));
+
+    // Resolve o segundo (válido) fetch.
+    resolveSecond(okResponse("nova"));
+    expect(await second).toBe("nova");
+
+    // Resolve o primeiro (órfão) fetch.
+    resolveFirst(okResponse("antiga"));
+    await first;
+
+    // O cache deve conter "nova", não "antiga".
+    expect(peekNarration(input("cena X"))).toBe("nova");
+  });
+
+  it("uma geração órfã que falha não deleta a entrada válida", async () => {
+    let resolveFirst!: (r: Response) => void;
+    let resolveSecond!: (r: Response) => void;
+    let callCount = 0;
+
+    fetchMock.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return new Promise<Response>((r) => { resolveFirst = r; });
+      return new Promise<Response>((r) => { resolveSecond = r; });
+    });
+
+    // Primeira chamada, fetch em voo.
+    const first = requestNarration(input("cena X"));
+
+    // Limpa o cache.
+    clearNarrationCache();
+
+    // Segunda chamada com o mesmo input (chave idêntica).
+    const second = requestNarration(input("cena X"));
+
+    // Resolve o segundo (válido) fetch.
+    resolveSecond(okResponse("prosa válida"));
+    expect(await second).toBe("prosa válida");
+
+    // Rejeita o primeiro (órfão) fetch.
+    resolveFirst({ ok: false, status: 500 } as unknown as Response);
+    await expect(first).rejects.toThrow();
+
+    // A entrada válida deve permanecer no cache.
+    expect(peekNarration(input("cena X"))).toBe("prosa válida");
+
+    // Nenhuma chamada adicional deve ter acontecido.
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("peekNarration", () => {
@@ -103,7 +170,7 @@ describe("primeNarration", () => {
   it("não rejeita quando a geração falha", async () => {
     fetchMock.mockResolvedValue({ ok: false, status: 500 } as unknown as Response);
 
-    expect(() => primeNarration(input("cena X"))).not.toThrow();
+    primeNarration(input("cena X"));
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
     expect(peekNarration(input("cena X"))).toBeNull();
   });
