@@ -174,6 +174,46 @@ describe("primeNarration", () => {
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
     expect(peekNarration(input("cena X"))).toBeNull();
   });
+
+  it("serializa: duas pré-gerações disparam seus fetches em sequência, não em paralelo", async () => {
+    let resolveFirst!: (r: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () => new Promise<Response>((r) => { resolveFirst = r; })
+    );
+
+    primeNarration(input("cena X"));
+    primeNarration(input("cena Y"));
+
+    // Só a primeira deve ter disparado: a segunda espera a vez na fila.
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    fetchMock.mockResolvedValueOnce(okResponse("prosa Y"));
+    resolveFirst(okResponse("prosa X"));
+
+    // Só depois que a primeira resolve é que a segunda dispara.
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+  });
+
+  it("não atrasa requestNarration: um pedido direto não fica atrás da fila", async () => {
+    let resolveQueued!: (r: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () => new Promise<Response>((r) => { resolveQueued = r; })
+    );
+
+    // Ocupa a fila com uma pré-geração que não resolve ainda.
+    primeNarration(input("cena fila"));
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    fetchMock.mockResolvedValueOnce(okResponse("prosa direta"));
+    const direto = requestNarration(input("cena direta"));
+
+    // O pedido direto não espera a fila liberar: dispara na hora.
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(await direto).toBe("prosa direta");
+
+    resolveQueued(okResponse("prosa fila"));
+  });
 });
 
 describe("clearNarrationCache", () => {
@@ -186,5 +226,27 @@ describe("clearNarrationCache", () => {
     expect(peekNarration(input("cena X"))).toBeNull();
     await requestNarration(input("cena X"));
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("descarta trabalho enfileirado por primeNarration que ainda não começou", async () => {
+    let resolveFirst!: (r: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () => new Promise<Response>((r) => { resolveFirst = r; })
+    );
+
+    primeNarration(input("cena A")); // ocupa a fila
+    primeNarration(input("cena B")); // enfileirada atrás, ainda não disparou
+
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    // "Recomeçar": limpa o cache e bumpa a geração antes que "cena B" saia da fila.
+    clearNarrationCache();
+    resolveFirst(okResponse("prosa A"));
+
+    // Dá chance para a fila tentar (e desistir) do turno de "cena B".
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

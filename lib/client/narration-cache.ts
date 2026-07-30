@@ -12,6 +12,17 @@ interface Entry {
 
 const cache = new Map<string, Entry>();
 
+// Fila da pré-geração: encadeia as chamadas de `primeNarration` para que rodem uma de
+// cada vez, nunca em paralelo. O jogador tem o tempo de leitura inteiro para a fila
+// drenar, então não há ganho em paralelizar — só risco de estourar o rate limit e
+// atrasar a chamada em primeiro plano que o jogador está de fato esperando.
+let chain: Promise<unknown> = Promise.resolve();
+
+// Bumped por `clearNarrationCache`: cada turno da fila confere se ainda pertence à
+// mesma geração antes de disparar, senão desiste. É o que impede um "Recomeçar" de
+// deixar prefetches da partida abandonada consumindo cota em segundo plano.
+let generation = 0;
+
 function keyOf(input: NarrationInput): string {
   return buildNarrationPrompt(input);
 }
@@ -44,10 +55,17 @@ export function requestNarration(input: NarrationInput): Promise<string> {
   return promise;
 }
 
-// Gera em segundo plano. Nunca lança: falhar aqui só significa que o jogador vai
-// esperar normalmente se chegar nessa cena.
+// Gera em segundo plano, uma pré-geração de cada vez (ver `chain` acima). Nunca
+// lança: falhar aqui só significa que o jogador vai esperar normalmente se chegar
+// nessa cena. Não participa do dedupe eager de `requestNarration` — quem clica no
+// meio da fila chama `requestNarration` direto e entra na entrada em voo, sem
+// esperar a vez na fila.
 export function primeNarration(input: NarrationInput): void {
-  requestNarration(input).catch(() => {});
+  const geracaoDoPedido = generation;
+  chain = chain.then(() => {
+    if (geracaoDoPedido !== generation) return;
+    return requestNarration(input).catch(() => {});
+  });
 }
 
 // Texto pronto, ou null se ainda está pendente (ou nunca foi pedido).
@@ -57,4 +75,5 @@ export function peekNarration(input: NarrationInput): string | null {
 
 export function clearNarrationCache(): void {
   cache.clear();
+  generation++;
 }
