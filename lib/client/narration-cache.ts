@@ -62,10 +62,17 @@ export function requestNarration(input: NarrationInput): Promise<string> {
 // esperar a vez na fila.
 export function primeNarration(input: NarrationInput): void {
   const geracaoDoPedido = generation;
-  chain = chain.then(() => {
-    if (geracaoDoPedido !== generation) return;
-    return requestNarration(input).catch(() => {});
-  });
+  chain = chain
+    .then(() => {
+      if (geracaoDoPedido !== generation) return;
+      return requestNarration(input);
+    })
+    // O catch fica no fim da corrente, não colado ao `requestNarration`: assim ele
+    // absorve também uma falha *sincrônica* (montar a chave é a única parte que roda
+    // fora de promise). Sem isso, um throw sincrônico deixaria `chain` rejeitada para
+    // sempre e todo turno seguinte seria pulado — a pré-geração se desligaria pelo
+    // resto da sessão, sem nenhum sinal.
+    .catch(() => {});
 }
 
 // Texto pronto, ou null se ainda está pendente (ou nunca foi pedido).
@@ -76,4 +83,9 @@ export function peekNarration(input: NarrationInput): string | null {
 export function clearNarrationCache(): void {
   cache.clear();
   generation++;
+  // Solta a cabeça da fila. A pré-geração que já está em voo não tem como ser
+  // cancelada, mas o resultado dela é descartado pela identidade da promise em
+  // `requestNarration`; o que não pode acontecer é a partida nova ficar esperando
+  // atrás dela (até 30s, o teto do timeout) para começar a pré-gerar.
+  chain = Promise.resolve();
 }
