@@ -13,7 +13,10 @@ dos trilhos.
   o conteúdo — apenas executa o grafo de cenas.
 - **História** (`supabase/`): fonte da verdade no Supabase (tabelas `acts`, `scenes`). O arquivo
   `supabase/seed/act1.json` dá o seed e serve de fixture de teste.
-- **Proxy Gemini** (`app/api/narrate`): narração ao vivo; `GEMINI_API_KEY` só no servidor.
+- **Proxy Gemini** (`app/api/narrate`): narração ao vivo; `GEMINI_API_KEY` só no servidor. Enquanto o
+  jogador lê a cena atual, o cliente pré-gera em segundo plano a narração de todas as cenas N+1
+  alcançáveis (`lib/client/narration-cache.ts` + `lib/engine/lookahead.ts`), então a escolha
+  normalmente já encontra o texto pronto — só a primeira narração da partida ainda espera o LLM.
 - **Leitura da história** (`app/api/story`): lê do Supabase com a service key (server). Sem Supabase
   configurado, cai no seed local (modo de dev).
 - **Imagens**: estáticas no Cloudflare R2, referenciadas por caminho (`NEXT_PUBLIC_R2_BASE_URL`).
