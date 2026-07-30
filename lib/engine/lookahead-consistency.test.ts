@@ -76,7 +76,11 @@ function varrerGrafo(visitar: (s: GameState) => void): number {
 }
 
 describe("consistência entre pré-geração e transição real", () => {
-  it("toda transição alcançável do Ato 1 já foi pré-gerada", () => {
+  // Estes dois testes percorrem ~8,7 mil estados e ~59 mil transições. Sozinhos
+  // rodam em ~1s, mas sob a carga paralela da suíte inteira numa máquina ocupada
+  // podem passar dos 5s padrão do Vitest. O timeout generoso reflete o trabalho
+  // que o teste genuinamente faz — não está mascarando um caminho lento.
+  it("toda transição alcançável do Ato 1 já foi pré-gerada", { timeout: 30_000 }, () => {
     let transicoesVerificadas = 0;
 
     const estadosVisitados = varrerGrafo((s) => {
@@ -115,7 +119,7 @@ describe("consistência entre pré-geração e transição real", () => {
     expect(transicoesVerificadas).toBeGreaterThan(10000);
   });
 
-  it("finais encerram a pré-geração", () => {
+  it("finais encerram a pré-geração", { timeout: 30_000 }, () => {
     let finais = 0;
     varrerGrafo((s) => {
       if (engine.getNode(s).kind !== "ending") return;
