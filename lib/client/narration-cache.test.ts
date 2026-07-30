@@ -195,6 +195,20 @@ describe("primeNarration", () => {
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
   });
 
+  it("uma falha sincrônica não envenena a fila para o resto da sessão", async () => {
+    fetchMock.mockResolvedValue(okResponse("prosa"));
+
+    // `inventory` ausente faz `buildNarrationPrompt` lançar ao montar a chave — o pior
+    // caso, porque esse throw acontece fora de qualquer promise. Se ele escapar do
+    // turno, a fila fica rejeitada e nenhuma pré-geração seguinte roda.
+    const invalido = { ...input("cena inválida"), inventory: undefined } as unknown as NarrationInput;
+
+    expect(() => primeNarration(invalido)).not.toThrow();
+    primeNarration(input("cena válida"));
+
+    await vi.waitFor(() => expect(peekNarration(input("cena válida"))).toBe("prosa"));
+  });
+
   it("não atrasa requestNarration: um pedido direto não fica atrás da fila", async () => {
     let resolveQueued!: (r: Response) => void;
     fetchMock.mockImplementationOnce(
@@ -226,6 +240,31 @@ describe("clearNarrationCache", () => {
     expect(peekNarration(input("cena X"))).toBeNull();
     await requestNarration(input("cena X"));
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("libera a fila: a partida nova pré-gera sem esperar a pré-geração abandonada", async () => {
+    let resolveAbandonada!: (r: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () => new Promise<Response>((r) => { resolveAbandonada = r; })
+    );
+
+    primeNarration(input("cena abandonada")); // ocupa a cabeça da fila, sem resolver
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+
+    // "Recomeçar" no meio da geração.
+    clearNarrationCache();
+    fetchMock.mockResolvedValueOnce(okResponse("prosa nova"));
+    primeNarration(input("cena nova"));
+
+    // Sem soltar a cabeça da fila, isto só aconteceria depois de `resolveAbandonada`
+    // — até 30s de espera para a partida nova começar a pré-gerar.
+    await vi.waitFor(() => expect(peekNarration(input("cena nova"))).toBe("prosa nova"));
+
+    // A abandonada terminando depois não contamina o cache da partida nova.
+    resolveAbandonada(okResponse("prosa abandonada"));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(peekNarration(input("cena nova"))).toBe("prosa nova");
+    expect(peekNarration(input("cena abandonada"))).toBeNull();
   });
 
   it("descarta trabalho enfileirado por primeNarration que ainda não começou", async () => {

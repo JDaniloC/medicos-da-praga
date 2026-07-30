@@ -335,7 +335,14 @@ export default function Page() {
           <div className="mt-4">
             {/* key força remontagem a cada nó: sem ela, um acerto de cache pula a
                 fase de loading e o React reaproveita a div, perdendo o fade-in. */}
-            <NarrationPanel key={node.id} text={narration} loading={narrating} />
+            {/* A chave inclui o tamanho do texto para que o `fade-in` (animação de
+                montagem, roda uma vez só) toque a cada narração nova — inclusive numa
+                cena que aponte para si mesma, em que o id do nó não muda. */}
+            <NarrationPanel
+              key={`${node.id}:${narration.length}`}
+              text={narration}
+              loading={narrating}
+            />
           </div>
 
           {node.kind === "scene" && (
