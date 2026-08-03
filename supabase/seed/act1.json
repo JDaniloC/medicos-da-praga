@@ -46,6 +46,48 @@
       "inventarioInicial": []
     }
   ],
+  "debriefing": [
+    {
+      "id": "guerra_cem_anos",
+      "icon": "⚔️",
+      "title": "A Guerra dos Cem Anos",
+      "subtitle": "Inspiração Histórica (1337–1453)",
+      "image": "/images/debriefing/war.png",
+      "content": "O conflito geopolítico do jogo entre Anglia e Gália foi inspirado na longa e devastadora Guerra dos Cem Anos (1337–1453) travada entre a Inglaterra e a França, marcada por cercos sangrentos e instabilidade social."
+    },
+    {
+      "id": "cerco_caffa",
+      "icon": "🏰",
+      "title": "O Cerco de Caffa e a Primeira Guerra Biológica",
+      "subtitle": "Crimeia, por volta de 1346",
+      "image": "/images/debriefing/caffa.png",
+      "content": "O momento em que o Canato propõe lançar corpos infectados sobre as muralhas é um fato histórico real! O Cerco de Caffa envolveu as forças mongóis arremessando cadáveres com a Peste Negra para dentro da cidade sitiada. Embora não tivessem conhecimento sobre vírus ou bactérias na época, essa é considerada uma das primeiras formas registradas de guerra biológica da humanidade."
+    },
+    {
+      "id": "medicos_peste",
+      "icon": "🎭",
+      "title": "Os Médicos da Peste",
+      "subtitle": "O Famoso Traje de Bico de Pássaro",
+      "image": "/images/debriefing/doctor.png",
+      "content": "O traje característico (com o manto de couro grosso e a famosa máscara em formato de bico de pássaro) começou a ser desenhado na Europa medieval/renascentista. O bico era preenchido com ervas aromáticas, cânfora e vinagre para filtrar o ar que o médico respirava."
+    },
+    {
+      "id": "humores_miasma",
+      "icon": "🧪",
+      "title": "A Teoria dos Humores e do Miasma",
+      "subtitle": "Os Erros da Ciência Antiga",
+      "image": "/images/debriefing/miasma.png",
+      "content": "Durante séculos, a humanidade acreditou que as doenças surgiam do desequilíbrio entre os fluidos corporais (Teoria dos Humores) ou pelo \"Miasma\" — um ar infectado e pútrido oriundo de matéria em decomposição. Hoje sabemos que a Varíola e a Peste são causadas por microrganismos (vírus e bactérias)."
+    },
+    {
+      "id": "lado_positivo_miasma",
+      "icon": "🧼",
+      "title": "O Lado Positivo da Teoria do Miasma",
+      "subtitle": "A Revolução da Higiene e Medicina Sanitária",
+      "image": "/images/debriefing/sanitation.png",
+      "content": "Apesar de a Teoria do Miasma estar cientificamente errada sobre a origem das infecções, ela teve um impacto positivo gigante! Ao acreditarem que o \"ar ruim\" e a sujeira causavam as pragas, médicos e governantes europeus passaram a incentivar a limpeza de ruas, a drenagem de pântanos, o escoamento de latrinas e a ventilação de hospitais. Essas práticas pioneiras de higienização ajudaram a conter diversas epidemias e abriram caminho para a medicina sanitária."
+    }
+  ],
   "nodes": [
     {
       "id": "cena1",

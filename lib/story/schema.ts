@@ -103,7 +103,7 @@ export type DiceNode = z.infer<typeof DiceNodeSchema>;
 export type EndingNode = z.infer<typeof EndingNodeSchema>;
 export type StoryNode = z.infer<typeof NodeSchema>;
 
-// ---- Trait + Act ----
+// ---- Trait + Debriefing + Act ----
 export const TraitDefSchema = z.object({
   id: z.string(),
   nome: z.string(),
@@ -113,6 +113,16 @@ export const TraitDefSchema = z.object({
 }).strict();
 export type TraitDef = z.infer<typeof TraitDefSchema>;
 
+export const DebriefingItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  subtitle: z.string().optional(),
+  icon: z.string().optional(),
+  image: z.string().optional(),
+  content: z.string(),
+}).strict();
+export type DebriefingItem = z.infer<typeof DebriefingItemSchema>;
+
 export const StoryActSchema = z.object({
   act: z.number().int(),
   title: z.string(),
@@ -121,6 +131,8 @@ export const StoryActSchema = z.object({
   traits: z.array(TraitDefSchema),
   items: z.record(z.string(), z.string()).optional(),
   badges: z.record(z.string(), z.string()).optional(),
+  debriefing: z.array(DebriefingItemSchema).optional(),
   nodes: z.array(NodeSchema),
 }).strict();
 export type StoryAct = z.infer<typeof StoryActSchema>;
+

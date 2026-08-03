@@ -1,5 +1,5 @@
 // lib/story/graph.ts
-import type { StoryAct, StoryNode, TraitDef } from "./schema";
+import type { StoryAct, StoryNode, TraitDef, DebriefingItem } from "./schema";
 
 export interface StoryGraph {
   act: number;
@@ -9,6 +9,7 @@ export interface StoryGraph {
   traits: TraitDef[];
   items: Record<string, string>;
   badges: Record<string, string>;
+  debriefing?: DebriefingItem[];
   nodes: Record<string, StoryNode>;
 }
 
@@ -21,7 +22,8 @@ export function buildGraph(act: StoryAct): StoryGraph {
   if (!nodes[act.start]) throw new Error(`Nó inicial inexistente: ${act.start}`);
   return {
     act: act.act, title: act.title, start: act.start, worldContext: act.worldContext,
-    traits: act.traits, items: act.items ?? {}, badges: act.badges ?? {}, nodes,
+    traits: act.traits, items: act.items ?? {}, badges: act.badges ?? {},
+    debriefing: act.debriefing, nodes,
   };
 }
 

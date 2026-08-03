@@ -23,7 +23,7 @@ import { SceneImage } from "@/components/SceneImage";
 import { NarrationPanel } from "@/components/NarrationPanel";
 import { ChoiceList } from "@/components/ChoiceList";
 import { DiceRoller } from "@/components/DiceRoller";
-import { GameOver } from "@/components/GameOver";
+import { GameOver, DebriefingScreen } from "@/components/GameOver";
 import { AudioToggle } from "@/components/AudioToggle";
 import { setAmbient, playSfx, playMusic } from "@/lib/audio/engine";
 
@@ -36,6 +36,7 @@ export default function Page() {
   const [busy, setBusy] = useState(false);
   const [lastRoll, setLastRoll] = useState<{ roll: number; success: boolean; nextState?: GameState } | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [showDebriefing, setShowDebriefing] = useState(false);
 
   // Marca se a primeira narração da partida já foi resolvida. Só antes disso a tela
   // de carregamento cheia aparece — nas transições seguintes os skeletons preservam
@@ -210,6 +211,7 @@ export default function Page() {
     setState(null);
     setNarration("");
     setLastRoll(null);
+    setShowDebriefing(false);
   }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -253,6 +255,23 @@ export default function Page() {
   const node = engine.getNode(state);
   const choices = node.kind === "scene" ? engine.getChoices(state) : [];
   const td = traitDef(engine.graph, state.trait);
+
+  if (showDebriefing && node.kind === "ending") {
+    return (
+      <main className="mx-auto w-full max-w-5xl px-4 py-8 pt-12 pb-32">
+        <AssetImage
+          path="ui/parchment-texture.webp"
+          className="pointer-events-none fixed inset-0 -z-10 h-full w-full scale-[1.05] object-cover opacity-[0.08] mix-blend-multiply"
+        />
+        <DebriefingScreen
+          title={node.title}
+          debriefing={engine.graph.debriefing}
+          onRestart={restart}
+          onBack={() => setShowDebriefing(false)}
+        />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pt-24 pb-32">
@@ -363,7 +382,12 @@ export default function Page() {
             />
           )}
           {node.kind === "ending" && (
-            <GameOver title={node.title} outcome={node.outcome} onRestart={restart} />
+            <GameOver
+              title={node.title}
+              outcome={node.outcome}
+              onShowDebriefing={() => setShowDebriefing(true)}
+              onRestart={restart}
+            />
           )}
         </section>
       </div>
