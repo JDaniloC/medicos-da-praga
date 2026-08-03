@@ -3,58 +3,106 @@
 
 import { useState } from "react";
 import type { DebriefingItem } from "@/lib/story/schema";
+import { SpeakButton } from "./SpeakButton";
 
-const DEFAULT_DEBRIEFING: DebriefingItem[] = [
+const DEFAULT_DEBRIEFING: (DebriefingItem & {
+  date?: string;
+  labelLeft?: string;
+  valueLeft?: string;
+  labelRight?: string;
+  valueRight?: string;
+})[] = [
   {
     id: "guerra_cem_anos",
     icon: "⚔️",
     title: "A Guerra dos Cem Anos",
-    subtitle: "Inspiração Histórica (1337–1453)",
+    subtitle: "Guerra Anglia vs. Gália",
+    date: "1337",
     image: "/images/debriefing/war.png",
     content:
-      "O conflito geopolítico do jogo entre Anglia e Gália foi inspirado na longa e devastadora Guerra dos Cem Anos (1337–1453) travada entre Inglaterra e França, marcada por cercos sangrentos e instabilidade social.",
+      "O conflito geopolítico do jogo entre Anglia e Gália foi inspirado na longa e devastadora **Guerra dos Cem Anos (1337–1453)** travada entre Inglaterra e França, marcada por cercos sangrentos e instabilidade social.",
+    labelLeft: "🛡️ O Contexto Histórico",
+    valueLeft: "Duas grandes potências disputando terras, levando à fome, cercos e caos social que prepararam o terreno para pragas.",
+    labelRight: "🧬 O Legado Real",
+    valueRight: "Estabeleceu as bases da identidade nacional e as fronteiras geopolíticas modernas de Inglaterra e França."
   },
   {
     id: "cerco_caffa",
     icon: "🏰",
-    title: "O Cerco de Caffa e a Primeira Guerra Biológica",
-    subtitle: "Crimeia, por volta de 1346",
+    title: "O Cerco de Caffa e a Guerra Biológica",
+    subtitle: "Primeiro ataque biológico registrado",
+    date: "1346",
     image: "/images/debriefing/caffa.png",
     content:
-      "O momento em que o Canato propõe lançar corpos infectados sobre as muralhas é um fato histórico real! O Cerco de Caffa envolveu as forças mongóis arremessando cadáveres com a Peste Negra para dentro da cidade sitiada. Embora não tivessem conhecimento sobre vírus ou bactérias na época, essa é considerada uma das primeiras formas registradas de guerra biológica da humanidade.",
+      "O momento em que o Canato propõe lançar corpos infectados sobre as muralhas é um fato histórico real! O **Cerco de Caffa (1346)** envolveu as forças mongóis arremessando cadáveres com a Peste Negra para dentro da cidade sitiada.",
+    labelLeft: "🛡️ Mito ou Fato",
+    valueLeft: "Mongóis sabiam que causava contágio, mas acreditavam que o odor fétido/miasma dos corpos matava os inimigos.",
+    labelRight: "🧬 O Legado Real",
+    valueRight: "Considerado um dos primeiros registros de guerra biológica e o vetor que espalhou a Peste Negra na Europa."
   },
   {
     id: "medicos_peste",
     icon: "🎭",
     title: "Os Médicos da Peste",
-    subtitle: "O Famoso Traje de Bico de Pássaro",
+    subtitle: "Traje de Proteção Histórico",
+    date: "1619",
     image: "/images/debriefing/doctor.png",
     content:
-      "O traje característico (com o manto de couro grosso e a famosa máscara em formato de bico de pássaro) começou a ser desenhado na Europa medieval/renascentista. O bico era preenchido com ervas aromáticas, cânfora e vinagre para filtrar o ar que o médico respirava.",
+      "O traje característico (com o manto de couro grosso e a famosa máscara em formato de bico de pássaro) começou a ser desenhado na Europa medieval/renascentista. O bico era preenchido com **ervas aromáticas, cânfora e vinagre**.",
+    labelLeft: "🛡️ Mito da Época",
+    valueLeft: "Acreditavam que os odores doces das ervas no bico da máscara neutralizavam o 'ar infectado' (miasma) da peste.",
+    labelRight: "🧬 O Legado Real",
+    valueRight: "O traje serviu como um protótipo primitivo dos modernos respiradores (N95) e roupas de isolamento biológico."
   },
   {
     id: "humores_miasma",
     icon: "🧪",
-    title: "A Teoria dos Humores e do Miasma",
+    title: "A Teoria dos Humores e Miasmas",
     subtitle: "Os Erros da Ciência Antiga",
+    date: "Antiguidade",
     image: "/images/debriefing/miasma.png",
     content:
-      "Durante séculos, a humanidade acreditou que as doenças surgiam do desequilíbrio entre os fluidos corporais (Teoria dos Humores) ou pelo \"Miasma\" — um ar infectado e pútrido oriundo de matéria em decomposição. Hoje sabemos que a Varíola e a Peste são causadas por microrganismos (vírus e bactérias).",
+      "Durante séculos, a humanidade acreditou que as doenças surgiam do desequilíbrio entre os fluidos corporais (**Teoria dos Humores**) ou pelo **Miasma** — um ar infectado e pútrido oriundo de matéria em decomposição.",
+    labelLeft: "🛡️ O Erro Científico",
+    valueLeft: "Acreditava-se que reestabelecer os quatro humores (sangue, fleuma, bile amarela/negra) curava infecções.",
+    labelRight: "🧬 O Legado Real",
+    valueRight: "Hoje sabemos que a Varíola e a Peste Negra são causadas por vírus e bactérias específicas (como a Yersinia pestis)."
   },
   {
     id: "lado_positivo_miasma",
     icon: "🧼",
-    title: "O Lado Positivo da Teoria do Miasma",
-    subtitle: "A Revolução da Higiene e Medicina Sanitária",
+    title: "O Lado Positivo do Miasma",
+    subtitle: "A Revolução da Higiene Pública",
+    date: "Séc. XIX",
     image: "/images/debriefing/sanitation.png",
     content:
-      "Apesar de a Teoria do Miasma estar cientificamente errada sobre a origem das infecções, ela teve um impacto positivo gigante! Ao acreditarem que o \"ar ruim\" e a sujeira causavam as pragas, médicos e governantes europeus passaram a incentivar a limpeza de ruas, a drenagem de pântanos, o escoamento de latrinas e a ventilação de hospitais. Essas práticas pioneiras de higienização ajudaram a conter diversas epidemias e abriram caminho para a medicina sanitária.",
-  },
+      "Apesar de a Teoria do Miasma estar cientificamente errada, ela teve um impacto positivo gigante! Ao acreditarem que o 'ar ruim' causava as pragas, médicos e governantes passaram a **incentivar a limpeza urbana e de hospitais**.",
+    labelLeft: "🛡️ Crença Inicial",
+    valueLeft: "Limpar as ruas, drenar pântanos e ventilar latrinas servia para afastar os odores ruins geradores de pragas.",
+    labelRight: "🧬 O Legado Real",
+    valueRight: "Essas práticas de saneamento básico pioneiras limparam cidades e abriram caminho para a medicina sanitária moderna."
+  }
 ];
+
+function formatHighlight(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong
+          key={i}
+          className="font-bold text-accent bg-amber-500/10 px-1 py-0.5 rounded font-sans"
+        >
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
 
 // -----------------------------------------------------------------------------
 // COMPONENTE 1: GameOver (Fim de Jogo / Vitória da Narrativa)
-// Mantido simples e focado, aparecendo abaixo da narração para preservar imersão.
 // -----------------------------------------------------------------------------
 export function GameOver({
   title,
@@ -106,7 +154,6 @@ export function GameOver({
 
 // -----------------------------------------------------------------------------
 // COMPONENTE 2: DebriefingScreen (Módulo de Encerramento)
-// Tela dedicada que ocupa o espaço total com layout premium, livre da UI do jogo.
 // -----------------------------------------------------------------------------
 export function DebriefingScreen({
   debriefing,
@@ -134,7 +181,7 @@ export function DebriefingScreen({
   };
 
   return (
-    <div className="fade-in space-y-8 rounded-2xl border border-edge/80 bg-panel p-6 sm:p-8 md:p-12 shadow-xl text-ink max-w-5xl mx-auto">
+    <div className="fade-in space-y-8 rounded-2xl border border-edge/85 bg-panel p-6 sm:p-8 md:p-12 shadow-xl text-ink max-w-5xl mx-auto">
       {/* Barra de Ação Superior */}
       <div className="flex items-center justify-between border-b border-edge/60 pb-5">
         <button
@@ -165,7 +212,7 @@ export function DebriefingScreen({
         </div>
       </div>
 
-      {/* Nota do Desenvolvedor (Design Elegante e Limpo) */}
+      {/* Nota do Desenvolvedor */}
       <div className="relative overflow-hidden rounded-xl border-l-4 border-amber-600 bg-amber-500/[0.04] p-6 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-amber-800 mb-2.5 text-xs uppercase tracking-wider">
           <span className="text-base">📍</span> Nota do Desenvolvedor
@@ -174,6 +221,8 @@ export function DebriefingScreen({
           Esta é uma versão de demonstração (Demo) desenvolvida para apresentação escolar, fazendo parte do projeto de pesquisa de <strong className="font-semibold text-accent">Mestrado</strong>. O projeto foi idealizado e desenvolvido em colaboração com a empresa de um amigo e parceiro de tecnologia.
         </p>
       </div>
+
+      <hr className="border-edge/60" />
 
       {/* Seção Central: Debriefing Histórico */}
       <section className="space-y-6">
@@ -209,37 +258,47 @@ export function DebriefingScreen({
           </div>
         </div>
 
-        {/* MODO CARROSSEL (Split-Layout Amplo) */}
+        {/* MODO CARROSSEL (Linha do Tempo + Layout Amplo) */}
         {viewMode === "carousel" ? (
-          <div className="space-y-5">
-            {/* Abas Superiores Rápidas */}
-            <div
-              className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-edge/40 snap-x snap-mandatory"
-              style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              {items.map((item, idx) => (
-                <button
-                  key={item.id || idx}
-                  onClick={() => setActiveIndex(idx)}
-                  className={`flex shrink-0 items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-bold font-serif transition-all snap-start ${
-                    idx === activeIndex
-                      ? "border-accent bg-accent text-white shadow-sm scale-105"
-                      : "border-edge bg-panel-strong text-ink-soft hover:border-accent hover:text-ink"
-                  }`}
-                >
-                  <span>{item.icon ?? "📜"}</span>
-                  <span>{item.title.split(":")[0]}</span>
-                </button>
-              ))}
+          <div className="space-y-8">
+            {/* LINHA DO TEMPO INTERATIVA (Substitui as abas simples) */}
+            <div className="relative pt-4 pb-8 border-b border-edge/40">
+              {/* Linha do trilho horizontal */}
+              <div className="absolute top-[34px] left-[5%] right-[5%] h-[2px] bg-edge/70 z-0" />
+              
+              <div className="relative flex justify-between items-center w-full z-10 px-2 sm:px-4">
+                {items.map((item, idx) => {
+                  const isActive = idx === activeIndex;
+                  return (
+                    <div key={item.id || idx} className="flex flex-col items-center relative">
+                      <button
+                        onClick={() => setActiveIndex(idx)}
+                        className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm transition-all duration-200 z-20 bg-panel hover:scale-110 shadow-sm ${
+                          isActive
+                            ? "border-accent bg-accent text-white ring-4 ring-accent/10"
+                            : "border-edge text-ink-soft hover:border-accent hover:text-ink"
+                        }`}
+                        aria-label={`Marco ${item.date || idx + 1}: ${item.title}`}
+                      >
+                        <span className="text-base select-none">{item.icon ?? "📜"}</span>
+                      </button>
+                      
+                      {/* Rótulo da data/milestone abaixo do círculo */}
+                      <span className={`absolute top-12 text-[10px] sm:text-xs font-mono font-bold tracking-wider whitespace-nowrap transition-colors duration-150 ${
+                        isActive ? "text-accent font-extrabold" : "text-ink-soft/70"
+                      }`}>
+                        {item.date || `Etapa ${idx + 1}`}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Split layout: Imagem na esquerda, texto na direita */}
-            <div className="grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1.1fr_1fr] gap-6 rounded-xl border border-edge bg-panel p-5 shadow-sm items-center">
+            <div className="grid md:grid-cols-[1fr_1.1fr] gap-8 rounded-xl border border-edge bg-panel p-6 shadow-sm items-start">
               {/* Moldura da imagem (Quadrada e Snug Fit) */}
-              <div className="rounded-lg border border-edge bg-slate-950/5 p-0 flex items-center justify-center aspect-square w-full max-w-[360px] md:max-w-none mx-auto overflow-hidden">
+              <div className="rounded-lg border border-edge bg-slate-950/5 p-0 flex items-center justify-center aspect-square w-full max-w-[360px] md:max-w-none mx-auto overflow-hidden shadow-inner">
                 {currentItem.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -251,32 +310,66 @@ export function DebriefingScreen({
                     }}
                   />
                 ) : (
-                  <div className="text-4xl">{currentItem.icon ?? "📜"}</div>
+                  <div className="text-5xl">{currentItem.icon ?? "📜"}</div>
                 )}
               </div>
 
-              {/* Informações Textuais e Legibilidade */}
-              <div className="flex flex-col justify-between space-y-4 py-2">
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <span className="inline-block rounded bg-amber-150 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-900 border border-amber-300/40">
-                      {currentItem.subtitle ?? "Contexto Histórico"}
-                    </span>
-                    <h5 className="text-xl sm:text-2xl font-bold font-serif text-accent leading-tight flex items-center gap-2">
-                      <span>{currentItem.icon ?? "📜"}</span>
-                      <span>{currentItem.title}</span>
-                    </h5>
+              {/* Informações Textuais, Audiodescrição e Mito vs Realidade */}
+              <div className="flex flex-col justify-between h-full space-y-4">
+                <div className="space-y-4">
+                  {/* Cabeçalho do Cartão com Botão Ouvir / TTS */}
+                  <div className="flex items-start justify-between gap-4 border-b border-edge/45 pb-3">
+                    <div className="space-y-1">
+                      <span className="inline-block rounded bg-amber-100 px-2.5 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-900 border border-amber-300/40">
+                        {currentItem.subtitle ?? "Contexto Histórico"}
+                      </span>
+                      <h5 className="text-xl sm:text-2xl font-bold font-serif text-accent leading-tight flex items-center gap-2">
+                        <span>{currentItem.title}</span>
+                      </h5>
+                    </div>
+                    
+                    {/* Botão de Áudio (Audiodescrição - DNA SimpleRead) */}
+                    <div className="shrink-0 pt-1">
+                      <SpeakButton text={`${currentItem.title}. ${currentItem.content.replace(/\*\*/g, "")}`} />
+                    </div>
                   </div>
-                  <p className="text-base leading-relaxed text-ink font-serif">
-                    {currentItem.content}
+
+                  {/* Conteúdo Textual com Destaques Dinâmicos (Negritos) */}
+                  <p className="text-base sm:text-lg leading-relaxed text-ink font-serif">
+                    {formatHighlight(currentItem.content)}
                   </p>
+
+                  {/* ESTRUTURA COMPARATIVA (Mito/Histórico vs Realidade/Legado) */}
+                  {currentItem.labelLeft && currentItem.valueLeft && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-4 border-t border-edge/50">
+                      {/* Coluna da Esquerda (Mito ou Contexto) */}
+                      <div className="rounded-lg border border-edge/60 bg-panel-strong p-4 space-y-1 shadow-sm">
+                        <span className="text-xs font-bold text-amber-900 uppercase tracking-wider block font-sans">
+                          {currentItem.labelLeft}
+                        </span>
+                        <p className="text-xs sm:text-sm leading-relaxed text-ink font-serif">
+                          {currentItem.valueLeft}
+                        </p>
+                      </div>
+
+                      {/* Coluna da Direita (Realidade Científica ou Legado) */}
+                      <div className="rounded-lg border border-indigo-200/50 bg-indigo-500/[0.02] p-4 space-y-1 shadow-sm">
+                        <span className="text-xs font-bold text-indigo-900 uppercase tracking-wider block font-sans">
+                          {currentItem.labelRight || "🧬 Realidade / Legado"}
+                        </span>
+                        <p className="text-xs sm:text-sm leading-relaxed text-ink font-serif">
+                          {currentItem.valueRight}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Controles do Carrossel */}
                 <div className="flex items-center justify-between pt-4 border-t border-edge/40">
                   <button
                     onClick={handlePrev}
-                    className="rounded-md border border-edge bg-panel px-3.5 py-2 text-xs font-bold text-accent hover:bg-panel-strong transition"
+                    className="rounded-md border border-edge bg-panel px-4 py-2 text-xs font-bold text-accent hover:bg-panel-strong transition"
                   >
                     ← Anterior
                   </button>
@@ -298,7 +391,7 @@ export function DebriefingScreen({
 
                   <button
                     onClick={handleNext}
-                    className="rounded-md border border-accent bg-accent px-3.5 py-2 text-xs font-bold text-white hover:bg-slate-800 transition"
+                    className="rounded-md border border-accent bg-accent px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 transition"
                   >
                     Próximo →
                   </button>
@@ -328,16 +421,37 @@ export function DebriefingScreen({
                   </div>
                 )}
                 <div className="space-y-2 flex-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300/40">
-                    {item.subtitle}
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300/40">
+                      {item.subtitle}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-ink-soft">
+                      {item.date}
+                    </span>
+                  </div>
+                  
                   <h5 className="font-bold font-serif text-accent text-base sm:text-lg flex items-center gap-2 mt-1">
                     <span>{item.icon ?? "📜"}</span>
                     <span>{item.title}</span>
                   </h5>
+                  
                   <p className="text-sm leading-relaxed text-ink font-serif">
-                    {item.content}
+                    {formatHighlight(item.content)}
                   </p>
+
+                  {/* Comparativo no Grid (Compacto) */}
+                  {item.labelLeft && item.valueLeft && (
+                    <div className="grid grid-cols-1 gap-2 pt-3 border-t border-edge/30 mt-3">
+                      <div className="text-xs font-serif bg-panel-strong p-2 rounded">
+                        <strong className="text-amber-950 text-[10px] block font-sans uppercase">{item.labelLeft}:</strong>
+                        {item.valueLeft}
+                      </div>
+                      <div className="text-xs font-serif bg-indigo-50/45 p-2 rounded border border-indigo-100/50">
+                        <strong className="text-indigo-950 text-[10px] block font-sans uppercase">{item.labelRight}:</strong>
+                        {item.valueRight}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

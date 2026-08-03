@@ -117,9 +117,14 @@ export const DebriefingItemSchema = z.object({
   id: z.string(),
   title: z.string(),
   subtitle: z.string().optional(),
+  date: z.string().optional(),
   icon: z.string().optional(),
   image: z.string().optional(),
   content: z.string(),
+  labelLeft: z.string().optional(),
+  valueLeft: z.string().optional(),
+  labelRight: z.string().optional(),
+  valueRight: z.string().optional(),
 }).strict();
 export type DebriefingItem = z.infer<typeof DebriefingItemSchema>;
 
