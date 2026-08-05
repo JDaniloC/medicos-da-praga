@@ -4,6 +4,7 @@
 import { useState } from "react";
 import type { DebriefingItem } from "@/lib/story/schema";
 import { SpeakButton } from "./SpeakButton";
+import { imageUrl } from "@/lib/images/assets";
 
 const DEFAULT_DEBRIEFING: (DebriefingItem & {
   date?: string;
@@ -18,7 +19,7 @@ const DEFAULT_DEBRIEFING: (DebriefingItem & {
     title: "A Guerra dos Cem Anos",
     subtitle: "Guerra Anglia vs. Gália",
     date: "1337",
-    image: "/images/debriefing/war.png",
+    image: "debriefing/war.png",
     content:
       "O conflito geopolítico do jogo entre Anglia e Gália foi inspirado na longa e devastadora **Guerra dos Cem Anos (1337–1453)** travada entre Inglaterra e França, marcada por cercos sangrentos e instabilidade social.",
     labelLeft: "🛡️ O Contexto Histórico",
@@ -32,7 +33,7 @@ const DEFAULT_DEBRIEFING: (DebriefingItem & {
     title: "O Cerco de Caffa e a Guerra Biológica",
     subtitle: "Primeiro ataque biológico registrado",
     date: "1346",
-    image: "/images/debriefing/caffa.png",
+    image: "debriefing/caffa.png",
     content:
       "O momento em que o Canato propõe lançar corpos infectados sobre as muralhas é um fato histórico real! O **Cerco de Caffa (1346)** envolveu as forças mongóis arremessando cadáveres com a Peste Negra para dentro da cidade sitiada.",
     labelLeft: "🛡️ Mito ou Fato",
@@ -46,7 +47,7 @@ const DEFAULT_DEBRIEFING: (DebriefingItem & {
     title: "Os Médicos da Peste",
     subtitle: "Traje de Proteção Histórico",
     date: "1619",
-    image: "/images/debriefing/doctor.png",
+    image: "debriefing/doctor.png",
     content:
       "O traje característico (com o manto de couro grosso e a famosa máscara em formato de bico de pássaro) começou a ser desenhado na Europa medieval/renascentista. O bico era preenchido com **ervas aromáticas, cânfora e vinagre**.",
     labelLeft: "🛡️ Mito da Época",
@@ -60,7 +61,7 @@ const DEFAULT_DEBRIEFING: (DebriefingItem & {
     title: "A Teoria dos Humores e Miasmas",
     subtitle: "Os Erros da Ciência Antiga",
     date: "Antiguidade",
-    image: "/images/debriefing/miasma.png",
+    image: "debriefing/miasma.png",
     content:
       "Durante séculos, a humanidade acreditou que as doenças surgiam do desequilíbrio entre os fluidos corporais (**Teoria dos Humores**) ou pelo **Miasma** — um ar infectado e pútrido oriundo de matéria em decomposição.",
     labelLeft: "🛡️ O Erro Científico",
@@ -74,7 +75,7 @@ const DEFAULT_DEBRIEFING: (DebriefingItem & {
     title: "O Lado Positivo do Miasma",
     subtitle: "A Revolução da Higiene Pública",
     date: "Séc. XIX",
-    image: "/images/debriefing/sanitation.png",
+    image: "debriefing/sanitation.png",
     content:
       "Apesar de a Teoria do Miasma estar cientificamente errada, ela teve um impacto positivo gigante! Ao acreditarem que o 'ar ruim' causava as pragas, médicos e governantes passaram a **incentivar a limpeza urbana e de hospitais**.",
     labelLeft: "🛡️ Crença Inicial",
@@ -302,7 +303,7 @@ export function DebriefingScreen({
                 {currentItem.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={currentItem.image}
+                    src={imageUrl(currentItem.image)}
                     alt={currentItem.title}
                     className="w-full h-full object-cover rounded"
                     onError={(e) => {
@@ -411,7 +412,7 @@ export function DebriefingScreen({
                   <div className="w-full rounded border border-edge bg-slate-950/5 p-0 flex items-center justify-center aspect-square max-h-[300px] overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={item.image}
+                      src={imageUrl(item.image)}
                       alt={item.title}
                       className="w-full h-full object-cover rounded"
                       onError={(e) => {
